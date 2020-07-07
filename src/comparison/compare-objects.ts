@@ -10,21 +10,21 @@ export class CompareObjects {
 
     baseObjects.forEach(baseObject => {
       let customObject = customObjects.find(
-        item => item.id == baseObject.id && item.type == baseObject.type
+        item => item.id === baseObject.id && item.type === baseObject.type
       );
 
       if (customObject) {
         customObjects2.push(customObject);
 
         // Modified Object
-        
+
         this.compareObject(baseObject, customObject);
       }
     });
 
     customObjects.forEach(customObject => {
       let customObject2 = customObjects2.find(
-        item => item.id == customObject.id && item.type == customObject.type
+        item => item.id === customObject.id && item.type === customObject.type
       );
 
       if (!customObject2) {
@@ -41,7 +41,7 @@ export class CompareObjects {
     const change: IChange = {
       property: `${baseObject.type} ${baseObject.id}`,
       changeType: 'MODIFY',
-      innerChanges: changes
+      innerChanges: changes,
     };
 
     for (const key in baseObject) {
@@ -50,18 +50,17 @@ export class CompareObjects {
         case 'id':
           break;
         case 'name':
-          if (baseObject.name != customObject.name) {
+          if (baseObject.name !== customObject.name) {
             changes.push({
               property: key,
               baseValue: baseObject.name,
               customValue: customObject.name,
-              changeType: 'MODIFY'
+              changeType: 'MODIFY',
             });
           }
           break;
         default:
           throw new Error(`${key} not implemented`);
-          break;
       }
     }
 
