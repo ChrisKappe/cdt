@@ -1,8 +1,11 @@
 export interface IChange {
-  property: string;
-  baseValue?: string;
-  customValue?: string;
-  changeType: 'NEW' | 'MODIFY' | 'DELETE';
+  id?: string | number;
+  name: string;
+  base?: any;
+  custom?: any;
+  change: 'NONE' | 'ADD' | 'MODIFY' | 'DELETE';
 
-  innerChanges?: Array<IChange>;
+  changes?: Array<IChange>;
+
+  [key: string]: any;
 }

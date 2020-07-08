@@ -12,7 +12,7 @@ export interface IVariable extends IBaseClass {
   temporary: boolean | undefined;
   subType: string | number | undefined;
   inDataSet: boolean | undefined;
-  securityfiltering: string | undefined;
+  securityFiltering: string | undefined;
   textML: Array<ILangText> | undefined;
 }
 
@@ -25,7 +25,7 @@ export class Variable extends BaseClass implements IVariable {
   temporary: boolean | undefined;
   subType: string | number | undefined;
   inDataSet: boolean | undefined;
-  securityfiltering: string | undefined;
+  securityFiltering: string | undefined;
   textML: Array<ILangText> | undefined;
 
   constructor(
@@ -50,7 +50,7 @@ export class Variable extends BaseClass implements IVariable {
     this.temporary = temporary;
     this.subType = subType;
     this.inDataSet = inDataSet;
-    this.securityfiltering = securityfiltering;
+    this.securityFiltering = securityfiltering;
     this.textML = textML;
   }
 }

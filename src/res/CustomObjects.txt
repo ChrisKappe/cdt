@@ -14,7 +14,7 @@ OBJECT Table 3 Payment Terms
              END;
 
     OnModify=BEGIN
-               SetLastModifiedDateTime;
+               SetLastModifiedDateTime;x
              END;
 
     OnDelete=VAR
