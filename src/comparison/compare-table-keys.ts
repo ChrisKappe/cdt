@@ -25,7 +25,7 @@ export class CompareTableKeys {
         comparedKeys.push(customKey);
 
         const keyChange = this.compare(baseKey, customKey);
-        if (keyChange.change != 'NONE') changes.push(keyChange);
+        if (keyChange.change !== 'NONE') changes.push(keyChange);
       } else
         changes.push({
           name: baseKey.fields.join(','),

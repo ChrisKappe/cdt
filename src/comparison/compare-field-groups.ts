@@ -21,11 +21,8 @@ export class CompareFieldGroups {
       );
 
       if (customFieldGroup) {
-        const fieldGroupChange = this.compare(
-          baseFieldGroup,
-          customFieldGroup
-        );
-        if (fieldGroupChange.change != 'NONE') changes.push(fieldGroupChange);
+        const fieldGroupChange = this.compare(baseFieldGroup, customFieldGroup);
+        if (fieldGroupChange.change !== 'NONE') changes.push(fieldGroupChange);
       } else
         changes.push({
           name: baseFieldGroup.name,

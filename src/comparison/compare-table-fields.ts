@@ -53,10 +53,7 @@ export class CompareTableFields {
     return change;
   }
 
-  static compare(
-    baseField: ITableField,
-    customField: ITableField
-  ): IChange {
+  static compare(baseField: ITableField, customField: ITableField): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
       id: baseField.id,

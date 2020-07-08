@@ -53,10 +53,7 @@ export class CompareAppObjects {
     return changes;
   }
 
-  static compare(
-    baseObject: IAppObject,
-    customObject: IAppObject
-  ): IChange {
+  static compare(baseObject: IAppObject, customObject: IAppObject): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
       id: baseObject.id,

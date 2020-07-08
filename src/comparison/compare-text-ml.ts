@@ -53,10 +53,7 @@ export class CompareTextML {
     return change;
   }
 
-  static compare(
-    baseVariable: ILangText,
-    customVariable: ILangText
-  ): IChange {
+  static compare(baseVariable: ILangText, customVariable: ILangText): IChange {
     const change: IChange = {
       name: baseVariable.lang,
       change: 'NONE',

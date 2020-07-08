@@ -55,11 +55,7 @@ export class CompareProperties {
     return change;
   }
 
-  static compare(
-    baseProperty: IProperty,
-    customProperty: IProperty
-  ): IChange {
-    // const changes: Array<IChange> = [];
+  static compare(baseProperty: IProperty, customProperty: IProperty): IChange {
     const change: IChange = {
       name: baseProperty.name,
       change: 'NONE',

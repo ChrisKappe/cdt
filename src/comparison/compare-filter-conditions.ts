@@ -22,10 +22,7 @@ export class CompareFilterConditions {
 
       if (customFilterCondition) {
         comparedFilterConditions.push(customFilterCondition);
-        const change = this.compare(
-          baseFilterCondition,
-          customFilterCondition
-        );
+        const change = this.compare(baseFilterCondition, customFilterCondition);
         if (change.change !== 'NONE') changes.push(change);
       } else {
         changes.push({

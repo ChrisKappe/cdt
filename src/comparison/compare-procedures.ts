@@ -26,11 +26,8 @@ export class CompareProcedures {
 
       if (customProcedure) {
         comparedProcedures.push(customProcedure);
-        const procedureChange = this.compare(
-          baseProcedure,
-          customProcedure
-        );
-        if (procedureChange.change != 'NONE') changes.push(procedureChange);
+        const procedureChange = this.compare(baseProcedure, customProcedure);
+        if (procedureChange.change !== 'NONE') changes.push(procedureChange);
       } else
         changes.push({
           id: baseProcedure.id,
@@ -57,10 +54,7 @@ export class CompareProcedures {
     return change;
   }
 
-  static compare(
-    baseProcedure: IProcedure,
-    customProcedure: IProcedure
-  ) {
+  static compare(baseProcedure: IProcedure, customProcedure: IProcedure) {
     const changes: Array<IChange> = [];
     const change: IChange = {
       id: baseProcedure.id,
@@ -285,7 +279,6 @@ export class CompareProcedures {
         case 'type':
         case 'includeSender':
         case 'globalVarAccess':
-        // EventSubscriber
         case 'publisherObjectType':
         case 'publisherObjectId':
         case 'eventFunction':

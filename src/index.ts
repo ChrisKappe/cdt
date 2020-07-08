@@ -25,7 +25,7 @@ export default class Main {
         JSON.stringify(changes, null, 2),
         'utf8'
       );
-      
+
       // let outFileName = path.resolve('src/res/BaseObjects.json');
       // fs.writeFileSync(
       //   outFileName,
