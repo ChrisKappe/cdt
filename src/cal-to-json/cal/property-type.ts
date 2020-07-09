@@ -15,4 +15,5 @@ export enum PropertyType {
   DataItemLink = 'DATA_ITEM_LINK',
   ActionList = 'ACTION_LIST',
   OrderBy = 'ORDERBY',
+  SIFTLevels = 'SIFT_LEVELS',
 }

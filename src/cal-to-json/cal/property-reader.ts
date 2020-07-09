@@ -62,6 +62,8 @@ export default class PropertyReader {
       case PropertyType.FieldList:
       case PropertyType.Option:
         return new Property(name, propType.type, value);
+      case PropertyType.SIFTLevels:
+        return new Property(name, propType.type, value);
       case PropertyType.TextML:
         return new Property(name, propType.type, TextMLReader.read(value));
       case PropertyType.TableRelation:

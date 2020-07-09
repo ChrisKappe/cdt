@@ -96,9 +96,9 @@ export default class ObjectReader {
     if (!match) throw new Error('object header error');
 
     const appObject = this.getObjectHeader(match[1]);
-    console.log(
-      `Type: ${appObject.type}, ID: ${appObject.id}, Name: ${appObject.name}`
-    );
+    // console.log(
+    //   `Type: ${appObject.type}, ID: ${appObject.id}, Name: ${appObject.name}`
+    // );
 
     const body = match[3];
     const segments = ObjectReader.splitSegments(appObject.type, body);

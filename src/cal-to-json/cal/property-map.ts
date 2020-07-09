@@ -43,6 +43,7 @@ export default class PropertyMap {
     { name: 'DataCaptionFields', type: PropertyType.FieldList },
     { name: 'PasteIsValid', type: PropertyType.Boolean },
     { name: 'LinkedObject', type: PropertyType.Boolean },
+    { name: 'LinkedInTransaction', type: PropertyType.Boolean },
     { name: 'TableType', type: PropertyType.Option },
     { name: 'DataClassification', type: PropertyType.Option },
     { name: 'ExternalName', type: PropertyType.Text },
@@ -109,6 +110,7 @@ export default class PropertyMap {
   static tableKey: Array<IPropertyMap> = [
     { name: 'Clustered', type: PropertyType.Boolean },
     { name: 'SumIndexFields', type: PropertyType.FieldList },
+    { name: 'SIFTLevelsToMaintain', type: PropertyType.SIFTLevels },
     { name: 'MaintainSQLIndex', type: PropertyType.Boolean },
     { name: 'MaintainSIFTIndex', type: PropertyType.Boolean },
     { name: 'SQLIndex', type: PropertyType.FieldList },

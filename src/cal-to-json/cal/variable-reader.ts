@@ -76,7 +76,7 @@ export default class VariableReader {
   }
 
   private static readVariable(input: string): IVariable {
-    const VARIABLE_EXPR = /(.*|".*")@(-?\d*) : (ARRAY \[([\d,]*)\] OF )?(TEMPORARY )?(\w*\[\d*\]|'.*?'|\w*)?( ((.*\r?\n?)*?))?;/;
+    const VARIABLE_EXPR = /(.*|".*")@(-?\d*) : (ARRAY \[([\d,]*)\] OF )?(TEMPORARY )?(\w*\[\d*\]|'.*?'|\w*)?(\s+((.*\r?\n?)*?))?;/;
     if (!VARIABLE_EXPR.test(input))
       throw new Error(`Invalid variable: ${input}`);
 

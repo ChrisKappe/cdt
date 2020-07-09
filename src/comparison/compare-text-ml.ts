@@ -48,8 +48,7 @@ export class CompareTextML {
       }
     });
 
-    if (change.changes && change.changes.length > 0) change.change = 'MODIFY';
-
+    if (changes.length > 0) change.change = 'MODIFY';
     return change;
   }
 

@@ -4,7 +4,7 @@ import { CompareTrigger } from './compare-trigger';
 import { CompareTextML } from './compare-text-ml';
 import { CompareTableRelation } from './compare-table-relation';
 import { CompareCalcFormula } from './compare-calc-formula';
-import { ComparePermission } from './compare-permission';
+import { ComparePermissions } from './compare-permission';
 
 export class CompareProperties {
   static compareCollection(
@@ -101,7 +101,13 @@ export class CompareProperties {
           customProperty.value
         );
       case 'PERMISSION':
-        return ComparePermission.compare(
+        return ComparePermissions.compare(
+          baseProperty.name,
+          baseProperty.value,
+          customProperty.value
+        );
+      case 'PERMISSIONS':
+        return ComparePermissions.compareCollection(
           baseProperty.name,
           baseProperty.value,
           customProperty.value

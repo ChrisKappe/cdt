@@ -54,7 +54,10 @@ export class CompareProcedures {
     return change;
   }
 
-  static compare(baseProcedure: IProcedure, customProcedure: IProcedure) {
+  static compare(
+    baseProcedure: IProcedure | any,
+    customProcedure: IProcedure | any
+  ) {
     const changes: Array<IChange> = [];
     const change: IChange = {
       id: baseProcedure.id,
@@ -81,20 +84,22 @@ export class CompareProcedures {
             baseProcedure.parameters || [],
             customProcedure.parameters || []
           );
-          if (paramsChange.changeType !== 'NONE') changes.push(paramsChange);
+          if (paramsChange.change !== 'NONE') changes.push(paramsChange);
           break;
         case 'attributes':
           const attributesChange = this.compareAttributes(
             baseProcedure.attributes || [],
             customProcedure.attributes || []
           );
-          if (attributesChange.changeType !== 'NONE')
+          if (attributesChange.change !== 'NONE')
             changes.push(attributesChange);
           break;
         case 'id':
         case 'name':
         case 'body':
         case 'local':
+        case 'eventVariable':
+        case 'eventVariableId':
           if (baseProcedure[key] !== customProcedure[key]) {
             changes.push({
               name: key,
@@ -110,8 +115,7 @@ export class CompareProcedures {
               baseProcedure.returns,
               customProcedure.returns
             );
-            if (returnsChange.changeType !== 'NONE')
-              changes.push(returnsChange);
+            if (returnsChange.change !== 'NONE') changes.push(returnsChange);
           } else if (!baseProcedure.returns && customProcedure.returns) {
             changes.push({
               name: 'Returns',
@@ -298,12 +302,6 @@ export class CompareProcedures {
           throw new Error(`${key} not implemented`);
       }
     }
-
-    const variableChange = CompareVariables.compare(
-      baseAttribute.variable,
-      customAttribute.variable
-    );
-    if (variableChange.change !== 'NONE') changes.push(variableChange);
 
     if (changes.length > 0) change.change = 'MODIFY';
     return change;
