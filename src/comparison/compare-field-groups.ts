@@ -24,12 +24,14 @@ export class CompareFieldGroups {
       );
 
       if (customFieldGroup) {
+        comparedFieldGroups.push(customFieldGroup);
         const fieldGroupChange = this.compare(baseFieldGroup, customFieldGroup);
         if (fieldGroupChange.change !== 'NONE') changes.push(fieldGroupChange);
       } else
         changes.push({
           element: ElementName,
           name: baseFieldGroup.name,
+          fields: baseFieldGroup.fields.join(', '),
           change: 'DELETE',
         });
     });
@@ -43,6 +45,7 @@ export class CompareFieldGroups {
         changes.push({
           element: ElementName,
           name: customFieldGroup.name,
+          fields: customFieldGroup.fields.join(', '),
           change: 'ADD',
         });
       }
@@ -60,6 +63,7 @@ export class CompareFieldGroups {
     const change: IChange = {
       element: ElementName,
       name: baseFieldGroup.name,
+      fields: baseFieldGroup.fields.join(', '),
       change: 'NONE',
       changes: changes,
     };
@@ -68,7 +72,6 @@ export class CompareFieldGroups {
       switch (key) {
         case 'className':
         case 'constructor':
-        case 'name':
           break;
         case 'fields':
           if (
@@ -84,13 +87,14 @@ export class CompareFieldGroups {
             });
           }
           break;
+        case 'name':
         case 'id':
-          if (baseFieldGroup.id !== customFieldGroup.id) {
+          if (baseFieldGroup[key] !== customFieldGroup[key]) {
             changes.push({
               element: 'Property',
-              name: 'id',
-              base: baseFieldGroup.id,
-              custom: customFieldGroup.id,
+              name: key,
+              base: baseFieldGroup[key],
+              custom: customFieldGroup[key],
               change: 'MODIFY',
             });
           }

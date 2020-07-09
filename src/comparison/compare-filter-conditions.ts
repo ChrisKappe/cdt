@@ -20,7 +20,11 @@ export class CompareFilterConditions {
 
     baseFilterConditions.forEach(baseFilterCondition => {
       let customFilterCondition = customFilterConditions.find(
-        item => item.field === baseFilterCondition.field
+        item =>
+          item.field === baseFilterCondition.field &&
+          item.type === baseFilterCondition.type &&
+          item.value === baseFilterCondition.value &&
+          item.filter === baseFilterCondition.filter
       );
 
       if (customFilterCondition) {
@@ -38,7 +42,11 @@ export class CompareFilterConditions {
 
     customFilterConditions.forEach(customFilterCondition => {
       let filterConditionFound = comparedFilterConditions.find(
-        item => item.field === customFilterCondition.field
+        item =>
+          item.field === customFilterCondition.field &&
+          item.type === customFilterCondition.type &&
+          item.value === customFilterCondition.value &&
+          item.filter === customFilterCondition.filter
       );
 
       if (!filterConditionFound) {
@@ -51,7 +59,6 @@ export class CompareFilterConditions {
     });
 
     if (changes.length > 0) change.change = 'MODIFY';
-
     return change;
   }
 
@@ -71,8 +78,8 @@ export class CompareFilterConditions {
       switch (key) {
         case 'className':
         case 'constructor':
-        case 'field':
           break;
+        case 'field':
         case 'type':
         case 'value':
         case 'filter':

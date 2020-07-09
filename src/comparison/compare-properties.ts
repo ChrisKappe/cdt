@@ -8,6 +8,8 @@ import { ComparePermissions } from './compare-permission';
 import { ComparePageActions } from './compare-page-actions';
 import { CompareFilterConditions } from './compare-filter-conditions';
 import { CompareTableView } from './compare-table-view';
+import { CompareOrderBy } from './compare-order-by';
+import { CompareDataItemLinks } from './compare-data-item-link';
 
 const ElementName = 'Property';
 
@@ -131,12 +133,19 @@ export class CompareProperties {
           baseProperty.value || [],
           customProperty.value || []
         );
+      case 'DATA_ITEM_LINK':
+        return CompareDataItemLinks.compareCollection(
+          baseProperty.value || [],
+          customProperty.value || []
+        );
       case 'TABLE_VIEW':
         return CompareTableView.compare(
           baseProperty.name,
           baseProperty.value,
           customProperty.value
         );
+      case 'ORDERBY':
+        return CompareOrderBy.compare(baseProperty.value, customProperty.value);
       default:
         throw new Error(`${baseProperty.type} not implemented`);
     }

@@ -446,8 +446,8 @@ export default class PropertyMap {
   static menuNode: Array<IPropertyMap> = [
     { name: 'Name', type: PropertyType.Text },
     { name: 'CaptionML', type: PropertyType.TextML },
-    { name: 'ParentNodeID', type: PropertyType.TextML },
-    { name: 'Image', type: PropertyType.TextML },
+    { name: 'ParentNodeID', type: PropertyType.Text },
+    { name: 'Image', type: PropertyType.Text },
     { name: 'IsShortcut', type: PropertyType.Boolean },
     { name: 'Visible', type: PropertyType.Boolean },
     { name: 'Enabled', type: PropertyType.Boolean },
@@ -456,6 +456,8 @@ export default class PropertyMap {
     { name: 'Deleted', type: PropertyType.Boolean },
     { name: 'RunObjectID', type: PropertyType.Text },
     { name: 'DepartmentCategory', type: PropertyType.Text },
+    { name: 'ApplicationArea', type: PropertyType.Text },
+    { name: 'MemberOfMenu', type: PropertyType.Text },    
   ];
 
   static codeunitProperties: Array<IPropertyMap> = [

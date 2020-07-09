@@ -11,6 +11,7 @@ import { CompareRequestPage } from './compare-request-page';
 import { CompareReportLabels } from './compare-report-labels';
 import { CompareXMLportElements } from './compare-xmlport-elements';
 import { CompareXMLportEvents } from './compare-xmlport-events';
+import { CompareQueryElements } from './compare-query-elements';
 
 const ElementName = 'ApplicationObject';
 
@@ -71,6 +72,8 @@ export class CompareAppObjects {
       change: 'NONE',
       changes: changes,
     };
+
+    if (baseObject.type === 'MenuSuite') return change;
 
     for (const key in baseObject) {
       switch (key) {
@@ -178,12 +181,23 @@ export class CompareAppObjects {
           if (labelsChange.change !== 'NONE') changes.push(labelsChange);
           break;
         case 'ELEMENTS':
-          const elementsChange = CompareXMLportElements.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
-          );
-          if (elementsChange.change !== 'NONE') changes.push(elementsChange);
-          break;
+          if (baseObject.type === 'XMLport') {
+            const elementsChange = CompareXMLportElements.compareCollection(
+              baseObject[key] || [],
+              customObject[key] || []
+            );
+            if (elementsChange.change !== 'NONE') changes.push(elementsChange);
+            break;
+          } else if (baseObject.type === 'Query') {
+            const elementsChange = CompareQueryElements.compareCollection(
+              baseObject[key] || [],
+              customObject[key] || []
+            );
+            if (elementsChange.change !== 'NONE') changes.push(elementsChange);
+            break;
+          } else {
+            throw new Error(`${key} not implemented`);
+          }
         case 'EVENTS':
           const eventsChange = CompareXMLportEvents.compareCollection(
             baseObject[key] || [],
