@@ -20,7 +20,9 @@ export class CompareXMLportElements {
     const comparedElements: Array<IXMLportElement> = [];
 
     baseElements.forEach(baseElement => {
-      let customElement = customElements.find(item => item.id === baseElement.id);
+      let customElement = customElements.find(
+        item => item.id === baseElement.id
+      );
 
       if (customElement) {
         comparedElements.push(customElement);

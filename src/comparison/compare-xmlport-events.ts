@@ -11,7 +11,7 @@ export class CompareXMLportEvents {
       change: 'NONE',
     };
 
-    if(baseElements.length > 0 || customElements.length >0) {
+    if (baseElements.length > 0 || customElements.length > 0) {
       throw new Error('XMLport events comparison not implemented');
     }
 
