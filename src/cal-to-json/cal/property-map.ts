@@ -457,7 +457,7 @@ export default class PropertyMap {
     { name: 'RunObjectID', type: PropertyType.Text },
     { name: 'DepartmentCategory', type: PropertyType.Text },
     { name: 'ApplicationArea', type: PropertyType.Text },
-    { name: 'MemberOfMenu', type: PropertyType.Text },    
+    { name: 'MemberOfMenu', type: PropertyType.Text },
   ];
 
   static codeunitProperties: Array<IPropertyMap> = [
