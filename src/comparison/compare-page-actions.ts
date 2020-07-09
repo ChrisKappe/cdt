@@ -20,9 +20,7 @@ export class ComparePageActions {
     const comparedActions: Array<IPageAction> = [];
 
     baseActions.forEach(baseAction => {
-      let customAction = customActions.find(
-        item => item.id === baseAction.id 
-      );
+      let customAction = customActions.find(item => item.id === baseAction.id);
 
       if (customAction) {
         comparedActions.push(customAction);

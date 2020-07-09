@@ -113,7 +113,6 @@ export class CompareAppObjects {
           if (fieldGroupChange.change !== 'NONE')
             changes.push(fieldGroupChange);
           break;
-
         case 'CONTROLS':
           const pageControlsChange = ComparePageControls.compareCollection(
             baseObject[key] || [],
