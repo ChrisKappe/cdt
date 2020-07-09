@@ -2,6 +2,8 @@ import ITableRelation from 'cal-to-json/models/table-relation';
 import { IChange } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
+const ElementName = 'TableRelation';
+
 export class CompareTableRelation {
   static compare(
     property: string,
@@ -10,6 +12,7 @@ export class CompareTableRelation {
   ) {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementName,
       name: property,
       change: 'NONE',
       changes: changes,
@@ -24,6 +27,7 @@ export class CompareTableRelation {
         case 'field':
           if (baseTableRelation[key] !== customTableRelation[key]) {
             changes.push({
+              element: 'Property',
               name: key,
               base: baseTableRelation[key],
               custom: customTableRelation[key],
@@ -61,6 +65,7 @@ export class CompareTableRelation {
             customTableRelation.alternate
           ) {
             changes.push({
+              element: 'Property',
               name: 'alternate',
               change: 'ADD',
             });
@@ -69,6 +74,7 @@ export class CompareTableRelation {
             !customTableRelation.alternate
           ) {
             changes.push({
+              element: 'Property',
               name: 'alternate',
               change: 'DELETE',
             });

@@ -1,6 +1,9 @@
 import IFieldGroup from 'cal-to-json/models/field-group';
 import { IChange } from './change.model';
 
+const ElementCollectionName = 'FieldGroups';
+const ElementName = 'FieldGroup';
+
 export class CompareFieldGroups {
   static compareCollection(
     baseFieldGroups: Array<IFieldGroup>,
@@ -8,7 +11,7 @@ export class CompareFieldGroups {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: 'FieldGroups',
+      element: ElementCollectionName,
       change: 'NONE',
       changes: changes,
     };
@@ -25,6 +28,7 @@ export class CompareFieldGroups {
         if (fieldGroupChange.change !== 'NONE') changes.push(fieldGroupChange);
       } else
         changes.push({
+          element: ElementName,
           name: baseFieldGroup.name,
           change: 'DELETE',
         });
@@ -37,6 +41,7 @@ export class CompareFieldGroups {
 
       if (!fieldGroupFound) {
         changes.push({
+          element: ElementName,
           name: customFieldGroup.name,
           change: 'ADD',
         });
@@ -53,6 +58,7 @@ export class CompareFieldGroups {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementName,
       name: baseFieldGroup.name,
       change: 'NONE',
       changes: changes,
@@ -70,6 +76,7 @@ export class CompareFieldGroups {
             customFieldGroup.fields.join(',')
           ) {
             changes.push({
+              element: 'Property',
               name: 'fields',
               base: baseFieldGroup.fields.join(', '),
               custom: customFieldGroup.fields.join(', '),
@@ -80,6 +87,7 @@ export class CompareFieldGroups {
         case 'id':
           if (baseFieldGroup.id !== customFieldGroup.id) {
             changes.push({
+              element: 'Property',
               name: 'id',
               base: baseFieldGroup.id,
               custom: customFieldGroup.id,

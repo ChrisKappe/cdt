@@ -1,14 +1,14 @@
 import { CompareProperties } from './compare-properties';
-import ITableField from 'cal-to-json/models/table-field';
 import { IChange } from './change.model';
+import { IPageAction } from 'cal-to-json/models/page-action';
 
-const ElementCollectionName = 'TableFields';
-const ElementName = 'TableField';
+const ElementCollectionName = 'PageActions';
+const ElementName = 'PageAction';
 
-export class CompareTableFields {
+export class ComparePageActions {
   static compareCollection(
-    baseFields: Array<ITableField>,
-    customFields: Array<ITableField>
+    baseActions: Array<IPageAction>,
+    customActions: Array<IPageAction>
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
@@ -17,37 +17,35 @@ export class CompareTableFields {
       changes: changes,
     };
 
-    const comparedFields: Array<ITableField> = [];
+    const comparedActions: Array<IPageAction> = [];
 
-    baseFields.forEach(baseField => {
-      let customField = customFields.find(
-        item => item.id === baseField.id && item.name === baseField.name
+    baseActions.forEach(baseAction => {
+      let customAction = customActions.find(
+        item => item.id === baseAction.id 
       );
 
-      if (customField) {
-        comparedFields.push(customField);
-        const change = this.compare(baseField, customField);
+      if (customAction) {
+        comparedActions.push(customAction);
+        const change = this.compare(baseAction, customAction);
         if (change.change !== 'NONE') changes.push(change);
       } else {
         changes.push({
           element: ElementName,
-          id: baseField.id,
-          name: baseField.name,
+          id: baseAction.id,
           change: 'DELETE',
         });
       }
     });
 
-    customFields.forEach(customField => {
-      let fieldFound = comparedFields.find(
-        item => item.id === customField.id && item.name === customField.name
+    customActions.forEach(customField => {
+      let actionFound = comparedActions.find(
+        item => item.id === customField.id
       );
 
-      if (!fieldFound) {
+      if (!actionFound) {
         changes.push({
           element: ElementName,
           id: customField.id,
-          name: customField.name,
           change: 'ADD',
         });
       }
@@ -57,31 +55,27 @@ export class CompareTableFields {
     return change;
   }
 
-  static compare(baseField: ITableField, customField: ITableField): IChange {
+  static compare(baseAction: IPageAction, customAction: IPageAction): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementName,
-      id: baseField.id,
-      name: baseField.name,
+      id: baseAction.id,
       change: 'NONE',
       changes: changes,
     };
 
-    for (const key in baseField) {
+    for (const key in baseAction) {
       switch (key) {
         case 'className':
         case 'constructor':
           break;
-        case 'name':
         case 'id':
-        case 'dataType':
-        case 'enabled':
-          if (baseField[key] !== customField[key]) {
+          if (baseAction[key] !== customAction[key]) {
             changes.push({
               element: 'Property',
               name: 'dataType',
-              base: baseField[key],
-              custom: customField[key],
+              base: baseAction[key],
+              custom: customAction[key],
               change: 'MODIFY',
             });
           }
@@ -89,8 +83,8 @@ export class CompareTableFields {
         case 'properties':
           const propChange = CompareProperties.compareCollection(
             'properties',
-            baseField[key] || [],
-            customField[key] || []
+            baseAction[key] || [],
+            customAction[key] || []
           );
           if (propChange.change !== 'NONE') changes.push(propChange);
           break;

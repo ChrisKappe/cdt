@@ -1,6 +1,7 @@
 export interface IChange {
+  element: string;
   id?: string | number;
-  name: string;
+  name?: string;
   base?: any;
   custom?: any;
   change: 'NONE' | 'ADD' | 'MODIFY' | 'DELETE';

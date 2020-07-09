@@ -1,46 +1,44 @@
-import ICalcFormula from 'cal-to-json/models/calc-formula';
 import { IChange } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
+import ITableView from 'cal-to-json/models/table-view';
 
-const ElementName = 'CalcFormula';
+const ElementName = 'TableView';
 
-export class CompareCalcFormula {
+export class CompareTableView {
   static compare(
-    propertyName: string,
-    baseCalcFormula: ICalcFormula,
-    customCalcFormula: ICalcFormula
+    property: string,
+    baseTableView: ITableView,
+    customTableView: ITableView
   ) {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementName,
-      name: propertyName,
+      name: property,
       change: 'NONE',
       changes: changes,
     };
 
-    for (const key in baseCalcFormula) {
+    for (const key in baseTableView) {
       switch (key) {
         case 'className':
         case 'constructor':
           break;
-        case 'method':
-        case 'reverseSign':
-        case 'table':
-        case 'field':
-          if (baseCalcFormula[key] !== customCalcFormula[key]) {
+        case 'key':
+        case 'order':
+          if (baseTableView[key] !== customTableView[key]) {
             changes.push({
               element: 'Property',
               name: key,
-              base: baseCalcFormula[key],
-              custom: customCalcFormula[key],
+              base: baseTableView[key],
+              custom: customTableView[key],
               change: 'MODIFY',
             });
           }
           break;
         case 'tableFilter':
           const tableFiltersChange = CompareFilterConditions.compareCollection(
-            baseCalcFormula.tableFilter || [],
-            customCalcFormula.tableFilter || []
+            baseTableView.tableFilter || [],
+            customTableView.tableFilter || []
           );
           if (tableFiltersChange.change !== 'NONE')
             changes.push(tableFiltersChange);

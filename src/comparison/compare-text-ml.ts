@@ -1,6 +1,9 @@
 import ILangText from 'cal-to-json/models/lang-text';
 import { IChange } from './change.model';
 
+const ElementCollectionName = 'TextML';
+const ElementName = 'Text';
+
 export class CompareTextML {
   static compareCollection(
     property: string,
@@ -9,6 +12,7 @@ export class CompareTextML {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementCollectionName,
       name: property,
       change: 'NONE',
       changes: changes,
@@ -27,7 +31,8 @@ export class CompareTextML {
         if (change.change !== 'NONE') changes.push(change2);
       } else {
         changes.push({
-          name: baseLangText.lang,
+          element: ElementName,
+          lang: baseLangText.lang,
           text: baseLangText.text,
           change: 'DELETE',
         });
@@ -41,7 +46,8 @@ export class CompareTextML {
 
       if (!langTextFound) {
         changes.push({
-          name: customLangText.lang,
+          element: ElementName,
+          lang: customLangText.lang,
           text: customLangText.text,
           change: 'ADD',
         });
@@ -54,13 +60,13 @@ export class CompareTextML {
 
   static compare(baseVariable: ILangText, customVariable: ILangText): IChange {
     const change: IChange = {
-      name: baseVariable.lang,
+      element: ElementName,
       change: 'NONE',
     };
 
     if (baseVariable.text !== customVariable.text) {
       return {
-        name: baseVariable.lang,
+        element: ElementName,
         base: baseVariable.text,
         custom: customVariable.text,
         change: 'MODIFY',

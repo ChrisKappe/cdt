@@ -1,6 +1,9 @@
 import IFilterCondition from 'cal-to-json/models/filter-condition';
 import { IChange } from './change.model';
 
+const ElementCollectionName = 'FilterConditions';
+const ElementName = 'FilterCondition';
+
 export class CompareFilterConditions {
   static compareCollection(
     baseFilterConditions: Array<IFilterCondition>,
@@ -8,7 +11,7 @@ export class CompareFilterConditions {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: 'FilterConditions',
+      element: ElementCollectionName,
       change: 'NONE',
       changes: changes,
     };
@@ -26,7 +29,7 @@ export class CompareFilterConditions {
         if (change.change !== 'NONE') changes.push(change);
       } else {
         changes.push({
-          name: 'FilterCondition',
+          element: ElementName,
           field: baseFilterCondition.field,
           change: 'DELETE',
         });
@@ -40,7 +43,7 @@ export class CompareFilterConditions {
 
       if (!filterConditionFound) {
         changes.push({
-          name: 'FilterCondition',
+          element: ElementName,
           field: customFilterCondition.field,
           change: 'ADD',
         });
@@ -58,7 +61,8 @@ export class CompareFilterConditions {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: 'FilterCondition',
+      element: ElementName,
+      field: baseField.field,
       change: 'NONE',
       changes: changes,
     };
@@ -75,6 +79,7 @@ export class CompareFilterConditions {
         case 'upperLimit':
           if (baseField[key] !== customField[key]) {
             changes.push({
+              element: 'Property',
               name: key,
               base: baseField[key],
               custom: customField[key],

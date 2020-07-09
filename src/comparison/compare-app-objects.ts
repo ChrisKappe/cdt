@@ -5,6 +5,9 @@ import { CompareTableFields } from './compare-table-fields';
 import { CompareTableKeys } from './compare-table-keys';
 import { CompareFieldGroups } from './compare-field-groups';
 import { CompareCode } from './compare-code';
+import { ComparePageControls } from './compare-page-controls';
+
+const ElementName = 'ApplicationObject';
 
 export class CompareAppObjects {
   static compareCollection(
@@ -25,6 +28,7 @@ export class CompareAppObjects {
         if (change.change !== 'NONE') changes.push(change);
       } else {
         changes.push({
+          element: ElementName,
           id: baseObject.id,
           type: baseObject.type,
           name: baseObject.name,
@@ -40,6 +44,7 @@ export class CompareAppObjects {
 
       if (!objectFound) {
         changes.push({
+          element: ElementName,
           id: customObject.id,
           type: customObject.type,
           name: customObject.name,
@@ -54,6 +59,7 @@ export class CompareAppObjects {
   static compare(baseObject: IAppObject, customObject: IAppObject): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementName,
       id: baseObject.id,
       type: baseObject.type,
       name: baseObject.name,
@@ -68,6 +74,7 @@ export class CompareAppObjects {
         case 'name':
           if (baseObject[key] !== customObject[key]) {
             changes.push({
+              element: 'Property',
               name: key,
               base: baseObject[key],
               custom: customObject[key],
@@ -105,6 +112,15 @@ export class CompareAppObjects {
           );
           if (fieldGroupChange.change !== 'NONE')
             changes.push(fieldGroupChange);
+          break;
+
+        case 'CONTROLS':
+          const pageControlsChange = ComparePageControls.compareCollection(
+            baseObject[key] || [],
+            customObject[key] || []
+          );
+          if (pageControlsChange.change !== 'NONE')
+            changes.push(pageControlsChange);
           break;
         case 'CODE':
           const codeChange = CompareCode.compare(

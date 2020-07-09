@@ -2,6 +2,9 @@ import { IVariable } from 'cal-to-json/cal/variable-reader';
 import { IChange } from './change.model';
 import { CompareTextML } from './compare-text-ml';
 
+const ElementCollectionName = 'Variables';
+const ElementName = 'Variable';
+
 export class CompareVariables {
   static compareCollection(
     baseVariables: Array<IVariable>,
@@ -9,7 +12,7 @@ export class CompareVariables {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: 'Variables',
+      element: ElementCollectionName,
       change: 'NONE',
       changes: changes,
     };
@@ -27,6 +30,7 @@ export class CompareVariables {
         if (change.change !== 'NONE') changes.push(change);
       } else {
         changes.push({
+          element: ElementName,
           id: baseVariable.id,
           name: baseVariable.name,
           change: 'DELETE',
@@ -41,6 +45,7 @@ export class CompareVariables {
 
       if (!variableFound) {
         changes.push({
+          element: ElementName,
           id: customVariable.id,
           name: customVariable.name,
           change: 'ADD',
@@ -55,6 +60,7 @@ export class CompareVariables {
   static compare(baseVariable: IVariable, customVariable: IVariable) {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementName,
       id: baseVariable.id,
       name: baseVariable.name,
       change: 'NONE',
@@ -63,6 +69,7 @@ export class CompareVariables {
 
     if (baseVariable.length !== customVariable.length) {
       changes.push({
+        element: 'Property',
         name: 'length',
         base: baseVariable.length,
         custom: customVariable.length,
@@ -72,6 +79,7 @@ export class CompareVariables {
 
     if (baseVariable.datatype !== customVariable.datatype) {
       changes.push({
+        element: 'Property',
         name: 'datatype',
         base: baseVariable.datatype,
         custom: customVariable.datatype,
@@ -81,6 +89,7 @@ export class CompareVariables {
 
     if (baseVariable.dimensions !== customVariable.dimensions) {
       changes.push({
+        element: 'Property',
         name: 'dimensions',
         base: baseVariable.dimensions,
         custom: customVariable.dimensions,
@@ -90,6 +99,7 @@ export class CompareVariables {
 
     if (baseVariable.temporary !== customVariable.temporary) {
       changes.push({
+        element: 'Property',
         name: 'temporary',
         base: baseVariable.temporary,
         custom: customVariable.temporary,
@@ -98,6 +108,7 @@ export class CompareVariables {
     }
     if (baseVariable.subType !== customVariable.subType) {
       changes.push({
+        element: 'Property',
         name: 'subType',
         base: baseVariable.subType,
         custom: customVariable.subType,
@@ -107,6 +118,7 @@ export class CompareVariables {
 
     if (baseVariable.inDataSet !== customVariable.inDataSet) {
       changes.push({
+        element: 'Property',
         name: 'inDataSet',
         base: baseVariable.inDataSet,
         custom: customVariable.inDataSet,
@@ -116,6 +128,7 @@ export class CompareVariables {
 
     if (baseVariable.securityFiltering !== customVariable.securityFiltering) {
       changes.push({
+        element: 'Property',
         name: 'securityFiltering',
         base: baseVariable.securityFiltering,
         custom: customVariable.securityFiltering,
@@ -133,7 +146,6 @@ export class CompareVariables {
     }
 
     if (changes.length > 0) change.change = 'MODIFY';
-
     return change;
   }
 }

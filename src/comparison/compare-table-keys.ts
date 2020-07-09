@@ -2,6 +2,9 @@ import ITableKey from 'cal-to-json/cal/table-key';
 import { IChange } from './change.model';
 import { CompareProperties } from './compare-properties';
 
+const ElementCollectionName = 'TableKeys';
+const ElementName = 'TableKey';
+
 export class CompareTableKeys {
   static compareCollection(
     baseKeys: Array<ITableKey>,
@@ -9,7 +12,7 @@ export class CompareTableKeys {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: 'Keys',
+      element: ElementCollectionName,
       change: 'NONE',
       changes: changes,
     };
@@ -28,7 +31,8 @@ export class CompareTableKeys {
         if (keyChange.change !== 'NONE') changes.push(keyChange);
       } else
         changes.push({
-          name: baseKey.fields.join(','),
+          element: ElementName,
+          fields: baseKey.fields.join(','),
           change: 'DELETE',
         });
     });
@@ -40,7 +44,8 @@ export class CompareTableKeys {
 
       if (!keyFound) {
         changes.push({
-          name: customKey.fields.join(', '),
+          element: ElementName,
+          fields: customKey.fields.join(', '),
           change: 'ADD',
         });
       }
@@ -53,7 +58,8 @@ export class CompareTableKeys {
   static compare(baseKey: ITableKey, customKey: ITableKey): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: baseKey.fields.join(', '),
+      element: ElementName,
+      fields: baseKey.fields.join(', '),
       change: 'NONE',
       changes: changes,
     };
@@ -62,11 +68,12 @@ export class CompareTableKeys {
       switch (key) {
         case 'className':
         case 'constructor':
-        case 'fields':
           break;
+        case 'fields':
         case 'enabled':
           if (baseKey.enabled !== customKey.enabled) {
             changes.push({
+              element: 'Property',
               name: 'enables',
               base: baseKey.enabled,
               custom: customKey.enabled,

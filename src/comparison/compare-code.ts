@@ -2,11 +2,13 @@ import { CompareProcedures } from './compare-procedures';
 import { IChange } from './change.model';
 import { CompareVariables } from './compare-variables';
 
+const ElementName = 'Code';
+
 export class CompareCode {
   static compare(baseCode: any, customCode: any): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: `Code`,
+      element: ElementName,
       change: 'NONE',
       changes: changes,
     };
@@ -16,7 +18,7 @@ export class CompareCode {
         case 'documentation':
           if (baseCode.documentation !== customCode.documentation) {
             changes.push({
-              name: 'documentation',
+              element: 'documentation',
               base: baseCode.documentation,
               custom: customCode.documentation,
               change: 'MODIFY',

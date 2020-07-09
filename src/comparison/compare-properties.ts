@@ -5,16 +5,21 @@ import { CompareTextML } from './compare-text-ml';
 import { CompareTableRelation } from './compare-table-relation';
 import { CompareCalcFormula } from './compare-calc-formula';
 import { ComparePermissions } from './compare-permission';
+import { ComparePageActions } from './compare-page-actions';
+import { CompareFilterConditions } from './compare-filter-conditions';
+import { CompareTableView } from './compare-table-view';
+
+const ElementName = 'Property';
 
 export class CompareProperties {
   static compareCollection(
-    name: string,
+    collectionName: string,
     baseProperties: Array<IProperty>,
     customProperties: Array<IProperty>
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
-      name: name,
+      element: collectionName,
       change: 'NONE',
       changes: changes,
     };
@@ -32,6 +37,7 @@ export class CompareProperties {
         if (change.change !== 'NONE') changes.push(change);
       } else {
         changes.push({
+          element: ElementName,
           name: baseProperty.name,
           change: 'DELETE',
         });
@@ -45,6 +51,7 @@ export class CompareProperties {
 
       if (!propertyFound) {
         changes.push({
+          element: ElementName,
           name: customProperty.name,
           change: 'ADD',
         });
@@ -57,6 +64,7 @@ export class CompareProperties {
 
   static compare(baseProperty: IProperty, customProperty: IProperty): IChange {
     const change: IChange = {
+      element: ElementName,
       name: baseProperty.name,
       change: 'NONE',
     };
@@ -69,6 +77,7 @@ export class CompareProperties {
       case 'OPTION':
         if (baseProperty.value !== customProperty.value) {
           return {
+            element: ElementName,
             name: baseProperty.name,
             base: baseProperty.value,
             custom: customProperty.value,
@@ -108,6 +117,22 @@ export class CompareProperties {
         );
       case 'PERMISSIONS':
         return ComparePermissions.compareCollection(
+          baseProperty.name,
+          baseProperty.value,
+          customProperty.value
+        );
+      case 'ACTION_LIST':
+        return ComparePageActions.compareCollection(
+          baseProperty.value,
+          customProperty.value
+        );
+      case 'TABLE_FILTER':
+        return CompareFilterConditions.compareCollection(
+          baseProperty.value || [],
+          customProperty.value || []
+        );
+      case 'TABLE_VIEW':
+        return CompareTableView.compare(
           baseProperty.name,
           baseProperty.value,
           customProperty.value

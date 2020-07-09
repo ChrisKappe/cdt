@@ -1,6 +1,9 @@
 import IPermission from 'cal-to-json/models/permission';
 import { IChange } from './change.model';
 
+const ElementCollectionName = 'Permissions';
+const ElementName = 'Permission';
+
 export class ComparePermissions {
   static compareCollection(
     property: string,
@@ -9,6 +12,7 @@ export class ComparePermissions {
   ): IChange {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementCollectionName,
       name: property,
       change: 'NONE',
       changes: changes,
@@ -26,14 +30,14 @@ export class ComparePermissions {
       if (customPermission) {
         comparedPermissions.push(customPermission);
         const change2 = this.compare(
-          'Permission',
+          ElementName,
           basePermission,
           customPermission
         );
         if (change.change !== 'NONE') changes.push(change2);
       } else {
         changes.push({
-          name: 'Permission',
+          element: ElementName,
           objectId: basePermission.objectId,
           objectType: basePermission.objectType,
           change: 'DELETE',
@@ -50,7 +54,7 @@ export class ComparePermissions {
 
       if (!permissionFound) {
         changes.push({
-          name: 'Permission',
+          element: ElementName,
           objectId: customPermission.objectId,
           objectType: customPermission.objectType,
           change: 'ADD',
@@ -69,6 +73,7 @@ export class ComparePermissions {
   ) {
     const changes: Array<IChange> = [];
     const change: IChange = {
+      element: ElementName,
       name: propertyName,
       objectId: basePermission.objectId,
       objectType: basePermission.objectType,
@@ -90,6 +95,7 @@ export class ComparePermissions {
         case 'execute':
           if (basePermission[key] !== customPermission[key]) {
             changes.push({
+              element: 'Property',
               name: key,
               base: basePermission[key],
               custom: customPermission[key],
