@@ -24,6 +24,18 @@ export class CompareTableView {
         case 'constructor':
           break;
         case 'key':
+          const baseKey = baseTableView.key?.join(','),
+            customKey = customTableView.key?.join(',');
+          if (baseKey !== customKey) {
+            changes.push({
+              element: 'Property',
+              name: key,
+              base: baseKey,
+              custom: customKey,
+              change: 'MODIFY',
+            });
+          }
+          break;
         case 'order':
           if (baseTableView[key] !== customTableView[key]) {
             changes.push({

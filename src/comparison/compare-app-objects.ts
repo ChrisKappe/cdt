@@ -6,6 +6,9 @@ import { CompareTableKeys } from './compare-table-keys';
 import { CompareFieldGroups } from './compare-field-groups';
 import { CompareCode } from './compare-code';
 import { ComparePageControls } from './compare-page-controls';
+import { CompareReportDataItems } from './compare-report-data-item';
+import { CompareRequestPage } from './compare-request-page';
+import { CompareReportLabels } from './compare-report-labels';
 
 const ElementName = 'ApplicationObject';
 
@@ -82,6 +85,28 @@ export class CompareAppObjects {
             });
           }
           break;
+        case 'RDLDATA':
+          if (baseObject[key] !== customObject[key]) {
+            changes.push({
+              element: 'RDLDATA',
+              base: baseObject[key],
+              custom: customObject[key],
+              change: 'MODIFY',
+            });
+          }
+          break;
+        case 'WORDLAYOUT':
+          const baseWordLayout = baseObject[key].join('\n'),
+            customWordLayout = customObject[key].join('\n');
+          if (baseWordLayout !== customWordLayout) {
+            changes.push({
+              element: 'WordLayout',
+              base: baseWordLayout,
+              custom: customWordLayout,
+              change: 'MODIFY',
+            });
+          }
+          break;
         case 'OBJECT-PROPERTIES':
         case 'PROPERTIES':
           const propsChange = CompareProperties.compareCollection(
@@ -121,6 +146,20 @@ export class CompareAppObjects {
           if (pageControlsChange.change !== 'NONE')
             changes.push(pageControlsChange);
           break;
+        case 'DATASET':
+          const dataItemsChange = CompareReportDataItems.compareCollection(
+            baseObject[key] || [],
+            customObject[key] || []
+          );
+          if (dataItemsChange.change !== 'NONE') changes.push(dataItemsChange);
+          break;
+        case 'REQUESTPAGE':
+          const requestChange = CompareRequestPage.compare(
+            baseObject[key],
+            customObject[key]
+          );
+          if (requestChange.change !== 'NONE') changes.push(requestChange);
+          break;
         case 'CODE':
           const codeChange = CompareCode.compare(
             baseObject[key],
@@ -128,6 +167,13 @@ export class CompareAppObjects {
           );
 
           if (codeChange.change !== 'NONE') changes.push(codeChange);
+          break;
+        case 'LABELS':
+          const labelsChange = CompareReportLabels.compareCollection(
+            baseObject[key] || [],
+            customObject[key] || []
+          );
+          if (labelsChange.change !== 'NONE') changes.push(labelsChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
