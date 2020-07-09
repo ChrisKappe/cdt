@@ -3,6 +3,8 @@ import PropertyMap, { IProperty } from './property-map';
 import IBaseClass, { BaseClass } from '../models/base-class';
 import StringHelper from '../util/string-helper';
 import ObjectReader from './object-reader';
+import IPageControl from '../models/page-control';
+import { RequestPage } from '../models/request-page';
 
 export interface IXMLportElement extends IBaseClass {
   id: string;
@@ -57,7 +59,25 @@ export default class XMLportReader {
 
   private static readRequestPage(input: string) {
     input = StringHelper.remove2SpaceIndentation(input);
-    return ObjectReader.splitSegments('Page', input);
+    const segments = ObjectReader.splitSegments('Page', input);
+
+    let controls: Array<IPageControl> | undefined,
+      properties: Array<IProperty> | undefined;
+    for (var i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      switch (segment.name) {
+        case 'CONTROLS':
+          controls = segment.body;
+          break;
+        case 'PROPERTIES':
+          properties = segment.body;
+          break;
+        default:
+          throw new Error(`${segment.name} unhandled`);
+      }
+    }
+
+    return new RequestPage(controls, properties);
   }
 
   static readEvents(input: string) {

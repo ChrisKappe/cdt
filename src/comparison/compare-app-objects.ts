@@ -9,6 +9,8 @@ import { ComparePageControls } from './compare-page-controls';
 import { CompareReportDataItems } from './compare-report-data-item';
 import { CompareRequestPage } from './compare-request-page';
 import { CompareReportLabels } from './compare-report-labels';
+import { CompareXMLportElements } from './compare-xmlport-elements';
+import { CompareXMLportEvents } from './compare-xmlport-events';
 
 const ElementName = 'ApplicationObject';
 
@@ -174,6 +176,20 @@ export class CompareAppObjects {
             customObject[key] || []
           );
           if (labelsChange.change !== 'NONE') changes.push(labelsChange);
+          break;
+        case 'ELEMENTS':
+          const elementsChange = CompareXMLportElements.compareCollection(
+            baseObject[key] || [],
+            customObject[key] || []
+          );
+          if (elementsChange.change !== 'NONE') changes.push(elementsChange);
+          break;
+        case 'EVENTS':
+          const eventsChange = CompareXMLportEvents.compareCollection(
+            baseObject[key] || [],
+            customObject[key] || []
+          );
+          if (eventsChange.change !== 'NONE') changes.push(eventsChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
