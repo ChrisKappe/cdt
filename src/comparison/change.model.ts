@@ -12,5 +12,8 @@ export interface IChange {
 }
 
 export enum ChangeType {
-  NONE, ADD, MODIFY, DELETE
+  NONE,
+  ADD,
+  MODIFY,
+  DELETE,
 }

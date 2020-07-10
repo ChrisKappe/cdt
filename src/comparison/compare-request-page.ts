@@ -27,7 +27,8 @@ export class CompareRequestPage {
             baseRequestPage[key] || [],
             customRequestPage[key] || []
           );
-          if (controlsChange.change !== ChangeType.NONE) changes.push(controlsChange);
+          if (controlsChange.change !== ChangeType.NONE)
+            changes.push(controlsChange);
           break;
         case 'properties':
           const propChange = CompareProperties.compareCollection(

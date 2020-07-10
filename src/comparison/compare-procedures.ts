@@ -30,7 +30,8 @@ export class CompareProcedures {
       if (customProcedure) {
         comparedProcedures.push(customProcedure);
         const procedureChange = this.compare(baseProcedure, customProcedure);
-        if (procedureChange.change !== ChangeType.NONE) changes.push(procedureChange);
+        if (procedureChange.change !== ChangeType.NONE)
+          changes.push(procedureChange);
       } else
         changes.push({
           element: ElementName,
@@ -90,7 +91,8 @@ export class CompareProcedures {
             baseProcedure.parameters || [],
             customProcedure.parameters || []
           );
-          if (paramsChange.change !== ChangeType.NONE) changes.push(paramsChange);
+          if (paramsChange.change !== ChangeType.NONE)
+            changes.push(paramsChange);
           break;
         case 'attributes':
           const attributesChange = CompareAttributes.compareCollection(
@@ -122,7 +124,8 @@ export class CompareProcedures {
               baseProcedure.returns,
               customProcedure.returns
             );
-            if (returnsChange.change !== ChangeType.NONE) changes.push(returnsChange);
+            if (returnsChange.change !== ChangeType.NONE)
+              changes.push(returnsChange);
           } else if (!baseProcedure.returns && customProcedure.returns) {
             changes.push({
               element: 'ReturnType',

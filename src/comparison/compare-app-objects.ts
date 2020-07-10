@@ -126,7 +126,8 @@ export class CompareAppObjects {
             baseObject[key] || [],
             customObject[key] || []
           );
-          if (fieldsChange.change !== ChangeType.NONE) changes.push(fieldsChange);
+          if (fieldsChange.change !== ChangeType.NONE)
+            changes.push(fieldsChange);
           break;
         case 'KEYS':
           const keysChange = CompareTableKeys.compareCollection(
@@ -156,14 +157,16 @@ export class CompareAppObjects {
             baseObject[key] || [],
             customObject[key] || []
           );
-          if (dataItemsChange.change !== ChangeType.NONE) changes.push(dataItemsChange);
+          if (dataItemsChange.change !== ChangeType.NONE)
+            changes.push(dataItemsChange);
           break;
         case 'REQUESTPAGE':
           const requestChange = CompareRequestPage.compare(
             baseObject[key],
             customObject[key]
           );
-          if (requestChange.change !== ChangeType.NONE) changes.push(requestChange);
+          if (requestChange.change !== ChangeType.NONE)
+            changes.push(requestChange);
           break;
         case 'CODE':
           const codeChange = CompareCode.compare(
@@ -178,7 +181,8 @@ export class CompareAppObjects {
             baseObject[key] || [],
             customObject[key] || []
           );
-          if (labelsChange.change !== ChangeType.NONE) changes.push(labelsChange);
+          if (labelsChange.change !== ChangeType.NONE)
+            changes.push(labelsChange);
           break;
         case 'ELEMENTS':
           if (baseObject.type === 'XMLport') {
@@ -186,14 +190,16 @@ export class CompareAppObjects {
               baseObject[key] || [],
               customObject[key] || []
             );
-            if (elementsChange.change !== ChangeType.NONE) changes.push(elementsChange);
+            if (elementsChange.change !== ChangeType.NONE)
+              changes.push(elementsChange);
             break;
           } else if (baseObject.type === 'Query') {
             const elementsChange = CompareQueryElements.compareCollection(
               baseObject[key] || [],
               customObject[key] || []
             );
-            if (elementsChange.change !== ChangeType.NONE) changes.push(elementsChange);
+            if (elementsChange.change !== ChangeType.NONE)
+              changes.push(elementsChange);
             break;
           } else {
             throw new Error(`${key} not implemented`);
@@ -203,7 +209,8 @@ export class CompareAppObjects {
             baseObject[key] || [],
             customObject[key] || []
           );
-          if (eventsChange.change !== ChangeType.NONE) changes.push(eventsChange);
+          if (eventsChange.change !== ChangeType.NONE)
+            changes.push(eventsChange);
           break;
         default:
           throw new Error(`${key} not implemented`);

@@ -20,7 +20,7 @@ export class CompareProperties {
     customProperties: Array<IProperty>
   ): IChange {
     const changes: Array<IChange> = [];
-    const change: IChange = {      
+    const change: IChange = {
       element: collectionName,
       change: ChangeType.NONE,
       changes: changes,

@@ -38,7 +38,8 @@ export class CompareCode {
             customCode[key] || []
           );
 
-          if (procedureChange.change !== ChangeType.NONE) changes.push(procedureChange);
+          if (procedureChange.change !== ChangeType.NONE)
+            changes.push(procedureChange);
           break;
         default:
           throw new Error(`${key} not implemented`);

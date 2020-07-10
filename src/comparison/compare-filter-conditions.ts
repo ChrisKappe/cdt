@@ -30,7 +30,7 @@ export class CompareFilterConditions {
       if (customFilterCondition) {
         comparedFilterConditions.push(customFilterCondition);
         const change = this.compare(baseFilterCondition, customFilterCondition);
-        if (change.change !==ChangeType.NONE) changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
