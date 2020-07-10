@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { IPageAction } from 'cal-to-json/models/page-action';
 
 const ElementCollectionName = 'PageActions';
@@ -13,7 +13,7 @@ export class ComparePageActions {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -25,12 +25,12 @@ export class ComparePageActions {
       if (customAction) {
         comparedActions.push(customAction);
         const change = this.compare(baseAction, customAction);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseAction.id,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -44,12 +44,12 @@ export class ComparePageActions {
         changes.push({
           element: ElementName,
           id: customField.id,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -58,7 +58,7 @@ export class ComparePageActions {
     const change: IChange = {
       element: ElementName,
       id: baseAction.id,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -74,7 +74,7 @@ export class ComparePageActions {
               name: 'dataType',
               base: baseAction[key],
               custom: customAction[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -84,14 +84,14 @@ export class ComparePageActions {
             baseAction[key] || [],
             customAction[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

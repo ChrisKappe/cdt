@@ -1,4 +1,4 @@
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { IDataItemLink } from 'cal-to-json/cal/data-item-link-reader';
 
 const ElementCollectionName = 'DataItemLinks';
@@ -12,7 +12,7 @@ export class CompareDataItemLinks {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -26,12 +26,12 @@ export class CompareDataItemLinks {
       if (customDataItemLink) {
         comparedDataItemLinks.push(customDataItemLink);
         const change = this.compare(baseDataItemLink, customDataItemLink);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           field: baseDataItemLink.field,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -45,12 +45,12 @@ export class CompareDataItemLinks {
         changes.push({
           element: ElementName,
           field: customDataItemLink.field,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -62,7 +62,7 @@ export class CompareDataItemLinks {
     const change: IChange = {
       element: ElementName,
       field: baseDataItemLink.field,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -80,7 +80,7 @@ export class CompareDataItemLinks {
               name: key,
               base: baseDataItemLink[key],
               custom: customDataItemLink[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -89,7 +89,7 @@ export class CompareDataItemLinks {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

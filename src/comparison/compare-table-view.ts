@@ -1,4 +1,4 @@
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 import ITableView from 'cal-to-json/models/table-view';
 
@@ -14,7 +14,7 @@ export class CompareTableView {
     const change: IChange = {
       element: ElementName,
       name: property,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -32,7 +32,7 @@ export class CompareTableView {
               name: key,
               base: baseKey,
               custom: customKey,
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -43,7 +43,7 @@ export class CompareTableView {
               name: key,
               base: baseTableView[key],
               custom: customTableView[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -52,7 +52,7 @@ export class CompareTableView {
             baseTableView.tableFilter || [],
             customTableView.tableFilter || []
           );
-          if (tableFiltersChange.change !== 'NONE')
+          if (tableFiltersChange.change !== ChangeType.NONE)
             changes.push(tableFiltersChange);
           break;
         default:
@@ -60,7 +60,7 @@ export class CompareTableView {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

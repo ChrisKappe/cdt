@@ -1,5 +1,5 @@
 import { IReturnType } from 'cal-to-json/models/return-type';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementName = 'ReturnType';
 
@@ -11,7 +11,7 @@ export class CompareReturnType {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -29,7 +29,7 @@ export class CompareReturnType {
               name: key,
               base: baseReturnType[key],
               custom: customReturnType[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -38,7 +38,7 @@ export class CompareReturnType {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

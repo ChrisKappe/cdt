@@ -1,5 +1,5 @@
 import IPermission from 'cal-to-json/models/permission';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementCollectionName = 'Permissions';
 const ElementName = 'Permission';
@@ -14,7 +14,7 @@ export class ComparePermissions {
     const change: IChange = {
       element: ElementCollectionName,
       name: property,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -34,13 +34,13 @@ export class ComparePermissions {
           basePermission,
           customPermission
         );
-        if (change.change !== 'NONE') changes.push(change2);
+        if (change.change !== ChangeType.NONE) changes.push(change2);
       } else {
         changes.push({
           element: ElementName,
           objectId: basePermission.objectId,
           objectType: basePermission.objectType,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -57,12 +57,12 @@ export class ComparePermissions {
           element: ElementName,
           objectId: customPermission.objectId,
           objectType: customPermission.objectType,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -77,7 +77,7 @@ export class ComparePermissions {
       name: propertyName,
       objectId: basePermission.objectId,
       objectType: basePermission.objectType,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -99,7 +99,7 @@ export class ComparePermissions {
               name: key,
               base: basePermission[key],
               custom: customPermission[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -108,7 +108,7 @@ export class ComparePermissions {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

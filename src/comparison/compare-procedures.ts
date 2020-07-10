@@ -1,5 +1,5 @@
 import { IProcedure } from 'cal-to-json/models/procedure';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareVariables } from './compare-variables';
 import { CompareParameters } from './compare-parameters';
 import { CompareAttributes } from './compare-attributes';
@@ -16,7 +16,7 @@ export class CompareProcedures {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -30,13 +30,13 @@ export class CompareProcedures {
       if (customProcedure) {
         comparedProcedures.push(customProcedure);
         const procedureChange = this.compare(baseProcedure, customProcedure);
-        if (procedureChange.change !== 'NONE') changes.push(procedureChange);
+        if (procedureChange.change !== ChangeType.NONE) changes.push(procedureChange);
       } else
         changes.push({
           element: ElementName,
           id: baseProcedure.id,
           name: baseProcedure.name,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
     });
 
@@ -50,12 +50,12 @@ export class CompareProcedures {
           element: ElementName,
           id: customProcedure.id,
           name: customProcedure.name,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -68,7 +68,7 @@ export class CompareProcedures {
       element: ElementName,
       id: baseProcedure.id,
       name: baseProcedure.name,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -83,21 +83,21 @@ export class CompareProcedures {
             customProcedure.variables || []
           );
 
-          if (varChange.change !== 'NONE') changes.push(varChange);
+          if (varChange.change !== ChangeType.NONE) changes.push(varChange);
           break;
         case 'parameters':
           const paramsChange = CompareParameters.compareCollection(
             baseProcedure.parameters || [],
             customProcedure.parameters || []
           );
-          if (paramsChange.change !== 'NONE') changes.push(paramsChange);
+          if (paramsChange.change !== ChangeType.NONE) changes.push(paramsChange);
           break;
         case 'attributes':
           const attributesChange = CompareAttributes.compareCollection(
             baseProcedure.attributes || [],
             customProcedure.attributes || []
           );
-          if (attributesChange.change !== 'NONE')
+          if (attributesChange.change !== ChangeType.NONE)
             changes.push(attributesChange);
           break;
         case 'id':
@@ -112,7 +112,7 @@ export class CompareProcedures {
               name: key,
               base: baseProcedure[key],
               custom: customProcedure[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -122,16 +122,16 @@ export class CompareProcedures {
               baseProcedure.returns,
               customProcedure.returns
             );
-            if (returnsChange.change !== 'NONE') changes.push(returnsChange);
+            if (returnsChange.change !== ChangeType.NONE) changes.push(returnsChange);
           } else if (!baseProcedure.returns && customProcedure.returns) {
             changes.push({
               element: 'ReturnType',
-              change: 'ADD',
+              change: ChangeType.ADD,
             });
           } else if (baseProcedure.returns && !customProcedure.returns) {
             changes.push({
               element: 'ReturnType',
-              change: 'DELETE',
+              change: ChangeType.DELETE,
             });
           }
           break;
@@ -140,7 +140,7 @@ export class CompareProcedures {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

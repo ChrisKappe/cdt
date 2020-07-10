@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import IReportLabel from 'cal-to-json/models/report-label';
 
 const ElementCollectionName = 'ReportLabels';
@@ -13,7 +13,7 @@ export class CompareReportLabels {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,13 +27,13 @@ export class CompareReportLabels {
       if (customLabel) {
         comparedLabels.push(customLabel);
         const change = this.compare(baseLabel, customLabel);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseLabel.id,
           name: baseLabel.name,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -48,12 +48,12 @@ export class CompareReportLabels {
           element: ElementName,
           id: customLabel.id,
           name: customLabel.name,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class CompareReportLabels {
       element: ElementName,
       id: baseLabel.id,
       name: baseLabel.name,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -80,7 +80,7 @@ export class CompareReportLabels {
               name: 'dataType',
               base: baseLabel[key],
               custom: customLabel[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -90,14 +90,14 @@ export class CompareReportLabels {
             baseLabel[key] || [],
             customLabel[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

@@ -1,5 +1,5 @@
 import IFieldGroup from 'cal-to-json/models/field-group';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementCollectionName = 'FieldGroups';
 const ElementName = 'FieldGroup';
@@ -12,7 +12,7 @@ export class CompareFieldGroups {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -26,13 +26,13 @@ export class CompareFieldGroups {
       if (customFieldGroup) {
         comparedFieldGroups.push(customFieldGroup);
         const fieldGroupChange = this.compare(baseFieldGroup, customFieldGroup);
-        if (fieldGroupChange.change !== 'NONE') changes.push(fieldGroupChange);
+        if (fieldGroupChange.change !== ChangeType.NONE) changes.push(fieldGroupChange);
       } else
         changes.push({
           element: ElementName,
           name: baseFieldGroup.name,
           fields: baseFieldGroup.fields.join(', '),
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
     });
 
@@ -46,12 +46,12 @@ export class CompareFieldGroups {
           element: ElementName,
           name: customFieldGroup.name,
           fields: customFieldGroup.fields.join(', '),
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -64,7 +64,7 @@ export class CompareFieldGroups {
       element: ElementName,
       name: baseFieldGroup.name,
       fields: baseFieldGroup.fields.join(', '),
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -83,7 +83,7 @@ export class CompareFieldGroups {
               name: 'fields',
               base: baseFieldGroup.fields.join(', '),
               custom: customFieldGroup.fields.join(', '),
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -95,7 +95,7 @@ export class CompareFieldGroups {
               name: key,
               base: baseFieldGroup[key],
               custom: customFieldGroup[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -104,7 +104,7 @@ export class CompareFieldGroups {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

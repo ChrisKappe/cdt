@@ -1,8 +1,8 @@
 #!/usr/bin/env node --max_old_space_size=8192
 
 import * as path from 'path';
+import { ExcelReport } from './report';
 import * as fs from 'fs';
-
 import ObjectReader from './cal-to-json/cal/object-reader';
 import { CompareAppObjects } from './comparison/compare-app-objects';
 
@@ -20,17 +20,18 @@ export default class Main {
 
     let changesFileName = path.resolve('src/res/changes.json');
     fs.writeFileSync(changesFileName, JSON.stringify(changes, null, 2), 'utf8');
+  }
 
-    // let outFileName = path.resolve('src/res/BaseObjects.json');
-    // fs.writeFileSync(
-    //   outFileName,
-    //   JSON.stringify(baseObjects, null, 2),
-    //   'utf8'
-    // );
-    // } catch (ex) {
-    //   console.error(ex.message);
-    // }
+  static generateReport() {
+    const changesFileName = path.resolve('src/res/changes.json');
+    const changesReportFileName = path.resolve('src/res/changes.xlsx');
+
+    const data = fs.readFileSync(changesFileName);
+    const changes = JSON.parse(data.toString()) as any;
+
+    ExcelReport.write(changes, changesReportFileName);
+    console.log('completed');
   }
 }
 
-Main.start();
+Main.generateReport();

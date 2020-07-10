@@ -4,9 +4,13 @@ export interface IChange {
   name?: string;
   base?: any;
   custom?: any;
-  change: 'NONE' | 'ADD' | 'MODIFY' | 'DELETE';
+  change: ChangeType;
 
   changes?: Array<IChange>;
 
   [key: string]: any;
+}
+
+export enum ChangeType {
+  NONE, ADD, MODIFY, DELETE
 }

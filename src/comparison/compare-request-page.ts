@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import IRequestPage from 'cal-to-json/models/request-page';
 import { ComparePageControls } from './compare-page-controls';
 
@@ -13,7 +13,7 @@ export class CompareRequestPage {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,7 +27,7 @@ export class CompareRequestPage {
             baseRequestPage[key] || [],
             customRequestPage[key] || []
           );
-          if (controlsChange.change !== 'NONE') changes.push(controlsChange);
+          if (controlsChange.change !== ChangeType.NONE) changes.push(controlsChange);
           break;
         case 'properties':
           const propChange = CompareProperties.compareCollection(
@@ -35,14 +35,14 @@ export class CompareRequestPage {
             baseRequestPage[key] || [],
             customRequestPage[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

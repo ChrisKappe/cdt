@@ -1,4 +1,4 @@
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { IOrderBy } from 'cal-to-json/cal/order-by-reader';
 
 const ElementName = 'OrderBy';
@@ -11,7 +11,7 @@ export class CompareOrderBy {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -20,7 +20,7 @@ export class CompareOrderBy {
     if (base !== custom) {
       return {
         element: ElementName,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
         base: baseItems,
         custom: customItems,
       };

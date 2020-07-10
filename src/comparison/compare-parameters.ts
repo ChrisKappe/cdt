@@ -1,5 +1,5 @@
 import { IParameter } from 'cal-to-json/models/parameter';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareVariables } from './compare-variables';
 
 const ElementCollectionName = 'Parameters';
@@ -13,7 +13,7 @@ export class CompareParameters {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,13 +27,13 @@ export class CompareParameters {
       if (customParameter) {
         comparedParameters.push(customParameter);
         const change = this.compare(baseParameter, customParameter);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseParameter.variable.id,
           name: baseParameter.variable.name,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -48,12 +48,12 @@ export class CompareParameters {
           element: ElementName,
           id: customParameter.variable.id,
           name: customParameter.variable.name,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class CompareParameters {
       element: ElementName,
       id: baseParameter.variable.id,
       name: baseParameter.variable.name,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -73,7 +73,7 @@ export class CompareParameters {
         name: 'byReference',
         base: baseParameter.byReference,
         custom: customParameter.byReference,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -81,9 +81,9 @@ export class CompareParameters {
       baseParameter.variable,
       customParameter.variable
     );
-    if (variableChange.change !== 'NONE') changes.push(variableChange);
+    if (variableChange.change !== ChangeType.NONE) changes.push(variableChange);
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

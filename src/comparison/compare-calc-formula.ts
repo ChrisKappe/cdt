@@ -1,5 +1,5 @@
 import ICalcFormula from 'cal-to-json/models/calc-formula';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
 const ElementName = 'CalcFormula';
@@ -14,7 +14,7 @@ export class CompareCalcFormula {
     const change: IChange = {
       element: ElementName,
       name: propertyName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -33,7 +33,7 @@ export class CompareCalcFormula {
               name: key,
               base: baseCalcFormula[key],
               custom: customCalcFormula[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -42,7 +42,7 @@ export class CompareCalcFormula {
             baseCalcFormula.tableFilter || [],
             customCalcFormula.tableFilter || []
           );
-          if (tableFiltersChange.change !== 'NONE')
+          if (tableFiltersChange.change !== ChangeType.NONE)
             changes.push(tableFiltersChange);
           break;
         default:
@@ -50,7 +50,7 @@ export class CompareCalcFormula {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

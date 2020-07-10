@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import IPageControl from 'cal-to-json/models/page-control';
 
 const ElementCollectionName = 'PageControls';
@@ -13,7 +13,7 @@ export class ComparePageControls {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,12 +27,12 @@ export class ComparePageControls {
       if (customControl) {
         comparedControls.push(customControl);
         const change = this.compare(baseControl, customControl);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseControl.id,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -46,12 +46,12 @@ export class ComparePageControls {
         changes.push({
           element: ElementName,
           id: customControl.id,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class ComparePageControls {
     const change: IChange = {
       element: ElementName,
       id: baseControl.id,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -81,7 +81,7 @@ export class ComparePageControls {
               name: 'dataType',
               base: baseControl[key],
               custom: customControl[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -91,14 +91,14 @@ export class ComparePageControls {
             baseControl[key] || [],
             customControl[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

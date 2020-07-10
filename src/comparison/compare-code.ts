@@ -1,5 +1,5 @@
 import { CompareProcedures } from './compare-procedures';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareVariables } from './compare-variables';
 
 const ElementName = 'Code';
@@ -9,7 +9,7 @@ export class CompareCode {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -21,7 +21,7 @@ export class CompareCode {
               element: 'documentation',
               base: baseCode.documentation,
               custom: customCode.documentation,
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -30,7 +30,7 @@ export class CompareCode {
             baseCode[key] || [],
             customCode[key] || []
           );
-          if (varChange.change !== 'NONE') changes.push(varChange);
+          if (varChange.change !== ChangeType.NONE) changes.push(varChange);
           break;
         case 'procedures':
           const procedureChange = CompareProcedures.compareCollection(
@@ -38,14 +38,14 @@ export class CompareCode {
             customCode[key] || []
           );
 
-          if (procedureChange.change !== 'NONE') changes.push(procedureChange);
+          if (procedureChange.change !== ChangeType.NONE) changes.push(procedureChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

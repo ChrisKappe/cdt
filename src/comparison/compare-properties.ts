@@ -1,5 +1,5 @@
 import { IProperty } from 'cal-to-json/cal/property-map';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareTrigger } from './compare-trigger';
 import { CompareTextML } from './compare-text-ml';
 import { CompareTableRelation } from './compare-table-relation';
@@ -20,9 +20,9 @@ export class CompareProperties {
     customProperties: Array<IProperty>
   ): IChange {
     const changes: Array<IChange> = [];
-    const change: IChange = {
+    const change: IChange = {      
       element: collectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -36,12 +36,12 @@ export class CompareProperties {
       if (customProperty) {
         comparedProperties.push(customProperty);
         const change = this.compare(baseProperty, customProperty);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           name: baseProperty.name,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -55,12 +55,12 @@ export class CompareProperties {
         changes.push({
           element: ElementName,
           name: customProperty.name,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -68,7 +68,7 @@ export class CompareProperties {
     const change: IChange = {
       element: ElementName,
       name: baseProperty.name,
-      change: 'NONE',
+      change: ChangeType.NONE,
     };
 
     switch (baseProperty.type) {
@@ -83,7 +83,7 @@ export class CompareProperties {
             name: baseProperty.name,
             base: baseProperty.value,
             custom: customProperty.value,
-            change: 'MODIFY',
+            change: ChangeType.MODIFY,
           };
         }
         break;

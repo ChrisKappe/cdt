@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import IReportDataItem from 'cal-to-json/models/report-data-item';
 
 const ElementCollectionName = 'ReportDataItems';
@@ -13,7 +13,7 @@ export class CompareReportDataItems {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,12 +27,12 @@ export class CompareReportDataItems {
       if (customDataItem) {
         comparedDataItems.push(customDataItem);
         const change = this.compare(baseDataItem, customDataItem);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseDataItem.id,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -46,12 +46,12 @@ export class CompareReportDataItems {
         changes.push({
           element: ElementName,
           id: customDataItem.id,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class CompareReportDataItems {
     const change: IChange = {
       element: ElementName,
       id: baseDataItem.id,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -82,7 +82,7 @@ export class CompareReportDataItems {
               name: 'dataType',
               base: baseDataItem[key],
               custom: customDataItem[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -92,14 +92,14 @@ export class CompareReportDataItems {
             baseDataItem[key] || [],
             customDataItem[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

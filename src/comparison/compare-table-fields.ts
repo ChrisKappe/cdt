@@ -1,6 +1,6 @@
 import { CompareProperties } from './compare-properties';
 import ITableField from 'cal-to-json/models/table-field';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementCollectionName = 'TableFields';
 const ElementName = 'TableField';
@@ -13,7 +13,7 @@ export class CompareTableFields {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,13 +27,13 @@ export class CompareTableFields {
       if (customField) {
         comparedFields.push(customField);
         const change = this.compare(baseField, customField);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseField.id,
           name: baseField.name,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -48,12 +48,12 @@ export class CompareTableFields {
           element: ElementName,
           id: customField.id,
           name: customField.name,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class CompareTableFields {
       element: ElementName,
       id: baseField.id,
       name: baseField.name,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -82,7 +82,7 @@ export class CompareTableFields {
               name: 'dataType',
               base: baseField[key],
               custom: customField[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -92,14 +92,14 @@ export class CompareTableFields {
             baseField[key] || [],
             customField[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

@@ -1,5 +1,5 @@
 import IFilterCondition from 'cal-to-json/models/filter-condition';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementCollectionName = 'FilterConditions';
 const ElementName = 'FilterCondition';
@@ -12,7 +12,7 @@ export class CompareFilterConditions {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -30,12 +30,12 @@ export class CompareFilterConditions {
       if (customFilterCondition) {
         comparedFilterConditions.push(customFilterCondition);
         const change = this.compare(baseFilterCondition, customFilterCondition);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !==ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           field: baseFilterCondition.field,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -53,12 +53,12 @@ export class CompareFilterConditions {
         changes.push({
           element: ElementName,
           field: customFilterCondition.field,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -70,7 +70,7 @@ export class CompareFilterConditions {
     const change: IChange = {
       element: ElementName,
       field: baseField.field,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -90,7 +90,7 @@ export class CompareFilterConditions {
               name: key,
               base: baseField[key],
               custom: customField[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -99,7 +99,7 @@ export class CompareFilterConditions {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

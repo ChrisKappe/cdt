@@ -1,4 +1,4 @@
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 const ElementCollectionName = 'XMLportEvents';
 
 export class CompareXMLportEvents {
@@ -8,7 +8,7 @@ export class CompareXMLportEvents {
   ): IChange {
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
     };
 
     if (baseElements.length > 0 || customElements.length > 0) {

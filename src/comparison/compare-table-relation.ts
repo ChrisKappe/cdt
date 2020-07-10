@@ -1,5 +1,5 @@
 import ITableRelation from 'cal-to-json/models/table-relation';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
 const ElementName = 'TableRelation';
@@ -14,7 +14,7 @@ export class CompareTableRelation {
     const change: IChange = {
       element: ElementName,
       name: property,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -31,7 +31,7 @@ export class CompareTableRelation {
               name: key,
               base: baseTableRelation[key],
               custom: customTableRelation[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -40,7 +40,7 @@ export class CompareTableRelation {
             baseTableRelation.conditions || [],
             customTableRelation.conditions || []
           );
-          if (conditionsChange.change !== 'NONE')
+          if (conditionsChange.change !== ChangeType.NONE)
             changes.push(conditionsChange);
           break;
         case 'tableFilters':
@@ -48,7 +48,7 @@ export class CompareTableRelation {
             baseTableRelation.tableFilters || [],
             customTableRelation.tableFilters || []
           );
-          if (tableFiltersChange.change !== 'NONE')
+          if (tableFiltersChange.change !== ChangeType.NONE)
             changes.push(tableFiltersChange);
           break;
         case 'alternate':
@@ -58,7 +58,7 @@ export class CompareTableRelation {
               baseTableRelation.alternate,
               customTableRelation.alternate
             );
-            if (alternateChange.change !== 'NONE')
+            if (alternateChange.change !== ChangeType.NONE)
               changes.push(alternateChange);
           } else if (
             !baseTableRelation.alternate &&
@@ -67,7 +67,7 @@ export class CompareTableRelation {
             changes.push({
               element: 'Property',
               name: 'alternate',
-              change: 'ADD',
+              change: ChangeType.ADD,
             });
           } else if (
             baseTableRelation.alternate &&
@@ -76,7 +76,7 @@ export class CompareTableRelation {
             changes.push({
               element: 'Property',
               name: 'alternate',
-              change: 'DELETE',
+              change: ChangeType.DELETE,
             });
           }
           break;
@@ -85,7 +85,7 @@ export class CompareTableRelation {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

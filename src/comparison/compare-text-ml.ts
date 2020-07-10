@@ -1,5 +1,5 @@
 import ILangText from 'cal-to-json/models/lang-text';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementCollectionName = 'TextML';
 const ElementName = 'Text';
@@ -14,7 +14,7 @@ export class CompareTextML {
     const change: IChange = {
       element: ElementCollectionName,
       name: property,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -28,13 +28,13 @@ export class CompareTextML {
       if (customLangText) {
         comparedLangTexts.push(customLangText);
         const change2 = this.compare(baseLangText, customLangText);
-        if (change.change !== 'NONE') changes.push(change2);
+        if (change.change !== ChangeType.NONE) changes.push(change2);
       } else {
         changes.push({
           element: ElementName,
           lang: baseLangText.lang,
           text: baseLangText.text,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -49,19 +49,19 @@ export class CompareTextML {
           element: ElementName,
           lang: customLangText.lang,
           text: customLangText.text,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
   static compare(baseVariable: ILangText, customVariable: ILangText): IChange {
     const change: IChange = {
       element: ElementName,
-      change: 'NONE',
+      change: ChangeType.NONE,
     };
 
     if (baseVariable.text !== customVariable.text) {
@@ -69,7 +69,7 @@ export class CompareTextML {
         element: ElementName,
         base: baseVariable.text,
         custom: customVariable.text,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       };
     }
 

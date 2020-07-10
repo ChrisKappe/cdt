@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { IXMLportElement } from 'cal-to-json/cal/xml-port-reader';
 
 const ElementCollectionName = 'XMLportElements';
@@ -13,7 +13,7 @@ export class CompareXMLportElements {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,12 +27,12 @@ export class CompareXMLportElements {
       if (customElement) {
         comparedElements.push(customElement);
         const change = this.compare(baseElement, customElement);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseElement.id,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -46,12 +46,12 @@ export class CompareXMLportElements {
         changes.push({
           element: ElementName,
           id: customElement.id,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class CompareXMLportElements {
     const change: IChange = {
       element: ElementName,
       id: baseElement.id,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -83,7 +83,7 @@ export class CompareXMLportElements {
               name: 'dataType',
               base: baseElement[key],
               custom: customElement[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -93,14 +93,14 @@ export class CompareXMLportElements {
             baseElement[key] || [],
             customElement[key] || []
           );
-          if (propChange.change !== 'NONE') changes.push(propChange);
+          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

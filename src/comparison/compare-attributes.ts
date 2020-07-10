@@ -1,5 +1,5 @@
 import { IAttribute } from 'cal-to-json/cal/attribute-reader';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 
 const ElementCollectionName = 'Attributes';
 const ElementName = 'Attribute';
@@ -12,7 +12,7 @@ export class CompareAttributes {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -26,12 +26,12 @@ export class CompareAttributes {
       if (customAttribute) {
         comparedAttributes.push(customAttribute);
         const change = this.compare(baseAttribute, customAttribute);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           name: baseAttribute.type,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -45,12 +45,12 @@ export class CompareAttributes {
         changes.push({
           element: ElementName,
           name: customAttribute.type,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -62,7 +62,7 @@ export class CompareAttributes {
     const change: IChange = {
       element: ElementName,
       name: baseAttribute.type,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -86,7 +86,7 @@ export class CompareAttributes {
               name: key,
               base: baseAttribute[key],
               custom: customAttribute[key],
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -95,7 +95,7 @@ export class CompareAttributes {
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

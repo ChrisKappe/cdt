@@ -1,5 +1,5 @@
 import { IVariable } from 'cal-to-json/cal/variable-reader';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareTextML } from './compare-text-ml';
 
 const ElementCollectionName = 'Variables';
@@ -13,7 +13,7 @@ export class CompareVariables {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -27,13 +27,13 @@ export class CompareVariables {
       if (customVariable) {
         comparedVariables.push(customVariable);
         const change = this.compare(baseVariable, customVariable);
-        if (change.change !== 'NONE') changes.push(change);
+        if (change.change !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
           element: ElementName,
           id: baseVariable.id,
           name: baseVariable.name,
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
       }
     });
@@ -48,12 +48,12 @@ export class CompareVariables {
           element: ElementName,
           id: customVariable.id,
           name: customVariable.name,
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -63,7 +63,7 @@ export class CompareVariables {
       element: ElementName,
       id: baseVariable.id,
       name: baseVariable.name,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -73,7 +73,7 @@ export class CompareVariables {
         name: 'length',
         base: baseVariable.length,
         custom: customVariable.length,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -83,7 +83,7 @@ export class CompareVariables {
         name: 'datatype',
         base: baseVariable.datatype,
         custom: customVariable.datatype,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -93,7 +93,7 @@ export class CompareVariables {
         name: 'dimensions',
         base: baseVariable.dimensions,
         custom: customVariable.dimensions,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -103,7 +103,7 @@ export class CompareVariables {
         name: 'temporary',
         base: baseVariable.temporary,
         custom: customVariable.temporary,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
     if (baseVariable.subType !== customVariable.subType) {
@@ -112,7 +112,7 @@ export class CompareVariables {
         name: 'subType',
         base: baseVariable.subType,
         custom: customVariable.subType,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -122,7 +122,7 @@ export class CompareVariables {
         name: 'inDataSet',
         base: baseVariable.inDataSet,
         custom: customVariable.inDataSet,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -132,7 +132,7 @@ export class CompareVariables {
         name: 'securityFiltering',
         base: baseVariable.securityFiltering,
         custom: customVariable.securityFiltering,
-        change: 'MODIFY',
+        change: ChangeType.MODIFY,
       });
     }
 
@@ -142,10 +142,10 @@ export class CompareVariables {
         baseVariable.textML || [],
         customVariable.textML || []
       );
-      if (textMLChange.change !== 'NONE') changes.push(textMLChange);
+      if (textMLChange.change !== ChangeType.NONE) changes.push(textMLChange);
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }

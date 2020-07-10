@@ -1,5 +1,5 @@
 import ITableKey from 'cal-to-json/cal/table-key';
-import { IChange } from './change.model';
+import { IChange, ChangeType } from './change.model';
 import { CompareProperties } from './compare-properties';
 
 const ElementCollectionName = 'TableKeys';
@@ -13,7 +13,7 @@ export class CompareTableKeys {
     const changes: Array<IChange> = [];
     const change: IChange = {
       element: ElementCollectionName,
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -28,12 +28,12 @@ export class CompareTableKeys {
         comparedKeys.push(customKey);
 
         const keyChange = this.compare(baseKey, customKey);
-        if (keyChange.change !== 'NONE') changes.push(keyChange);
+        if (keyChange.change !== ChangeType.NONE) changes.push(keyChange);
       } else
         changes.push({
           element: ElementName,
           fields: baseKey.fields.join(','),
-          change: 'DELETE',
+          change: ChangeType.DELETE,
         });
     });
 
@@ -46,12 +46,12 @@ export class CompareTableKeys {
         changes.push({
           element: ElementName,
           fields: customKey.fields.join(', '),
-          change: 'ADD',
+          change: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 
@@ -60,7 +60,7 @@ export class CompareTableKeys {
     const change: IChange = {
       element: ElementName,
       fields: baseKey.fields.join(', '),
-      change: 'NONE',
+      change: ChangeType.NONE,
       changes: changes,
     };
 
@@ -77,7 +77,7 @@ export class CompareTableKeys {
               name: 'enables',
               base: baseKey.enabled,
               custom: customKey.enabled,
-              change: 'MODIFY',
+              change: ChangeType.MODIFY,
             });
           }
           break;
@@ -87,14 +87,14 @@ export class CompareTableKeys {
             baseKey[key] || [],
             customKey[key] || []
           );
-          if (propsChange.change !== 'NONE') changes.push(propsChange);
+          if (propsChange.change !== ChangeType.NONE) changes.push(propsChange);
           break;
         default:
           throw new Error(`${key} not implemented`);
       }
     }
 
-    if (changes.length > 0) change.change = 'MODIFY';
+    if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;
   }
 }
