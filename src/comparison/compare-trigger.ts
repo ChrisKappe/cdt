@@ -26,7 +26,6 @@ export class CompareTrigger {
       changes,
       'Variables',
       CompareVariables.compareCollection(
-        'Variables',
         baseTrigger.variables || [],
         customTrigger.variables || []
       )

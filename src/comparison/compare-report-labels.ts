@@ -11,13 +11,11 @@ import IReportLabel from 'cal-to-json/models/report-label';
 
 export class CompareReportLabels {
   static compareCollection(
-    propertyName: string,
     baseLabels: Array<IReportLabel>,
     customLabels: Array<IReportLabel>
   ): IChange {
     const changes: Array<IReportLabelChange> = [];
     const change: ICollectionChange<IReportLabelChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -97,7 +95,6 @@ export class CompareReportLabels {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

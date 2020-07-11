@@ -18,13 +18,11 @@ import { CompareDataItemLinks } from './compare-data-item-link';
 
 export class CompareProperties {
   static compareCollection(
-    propertyName: string,
     baseProperties: Array<IProperty>,
     customProperties: Array<IProperty>
   ): ICollectionChange<IPropertyChange> {
     const changes: Array<IPropertyChange> = [];
     const change: ICollectionChange<IPropertyChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -107,11 +105,7 @@ export class CompareProperties {
       case 'TEXT_ML':
         return this.GetPropertyChange(
           baseObject.name,
-          CompareTextML.compareCollection(
-            baseObject.name,
-            baseObject.value,
-            customObject.value
-          )
+          CompareTextML.compareCollection(baseObject.value, customObject.value)
         );
       case 'TABLE_RELATION':
         return this.GetPropertyChange(
@@ -134,17 +128,12 @@ export class CompareProperties {
       case 'PERMISSION':
         return this.GetPropertyChange(
           baseObject.name,
-          ComparePermissions.compare(
-            baseObject.name,
-            baseObject.value,
-            customObject.value
-          )
+          ComparePermissions.compare(baseObject.value, customObject.value)
         );
       case 'PERMISSIONS':
         return this.GetPropertyChange(
           baseObject.name,
           ComparePermissions.compareCollection(
-            baseObject.name,
             baseObject.value,
             customObject.value
           )
@@ -153,7 +142,6 @@ export class CompareProperties {
         return this.GetPropertyChange(
           baseObject.name,
           ComparePageActions.compareCollection(
-            baseObject.name,
             baseObject.value,
             customObject.value
           )
@@ -162,7 +150,6 @@ export class CompareProperties {
         return this.GetPropertyChange(
           baseObject.name,
           CompareFilterConditions.compareCollection(
-            baseObject.name,
             baseObject.value || [],
             customObject.value || []
           )
@@ -171,7 +158,6 @@ export class CompareProperties {
         return this.GetPropertyChange(
           baseObject.name,
           CompareDataItemLinks.compareCollection(
-            baseObject.name,
             baseObject.value || [],
             customObject.value || []
           )
@@ -207,7 +193,7 @@ export class CompareProperties {
   ): IPropertyChange {
     return {
       propertyName: propertyName,
-      innerChange: change,
+      change: change,
       changeType: change.changeType,
     };
   }

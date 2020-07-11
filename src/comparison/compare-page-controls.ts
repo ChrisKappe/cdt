@@ -10,13 +10,11 @@ import IPageControl from 'cal-to-json/models/page-control';
 
 export class ComparePageControls {
   static compareCollection(
-    propertyName: string,
     baseControls: Array<IPageControl>,
     customControls: Array<IPageControl>
   ): ICollectionChange<IPageControlChange> {
     const changes: Array<IPageControlChange> = [];
     const change: ICollectionChange<IPageControlChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -94,7 +92,6 @@ export class ComparePageControls {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

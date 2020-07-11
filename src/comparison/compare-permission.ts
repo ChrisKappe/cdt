@@ -7,17 +7,13 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementName = 'Permission';
-
 export class ComparePermissions {
   static compareCollection(
-    propertyName: string,
     basePermissions: Array<IPermission>,
     customPermissions: Array<IPermission>
   ): ICollectionChange<IPermissionChange> {
     const changes: Array<IPermissionChange> = [];
     const change: ICollectionChange<IPermissionChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -33,15 +29,10 @@ export class ComparePermissions {
 
       if (customPermission) {
         comparedPermissions.push(customPermission);
-        const change2 = this.compare(
-          ElementName,
-          basePermission,
-          customPermission
-        );
+        const change2 = this.compare(basePermission, customPermission);
         if (change.changeType !== ChangeType.NONE) changes.push(change2);
       } else {
         changes.push({
-          propertyName: propertyName,
           objectId: basePermission.objectId,
           objectType: basePermission.objectType,
           base: basePermission,
@@ -60,7 +51,6 @@ export class ComparePermissions {
 
       if (!permissionFound) {
         changes.push({
-          propertyName: propertyName,
           objectId: customPermission.objectId,
           objectType: customPermission.objectType,
           base: null,
@@ -75,13 +65,11 @@ export class ComparePermissions {
   }
 
   static compare(
-    propertyName: string,
     baseObject: IPermission,
     customObject: IPermission
   ): IPermissionChange {
     const changes: Array<IMemberChange> = [];
     const change: IPermissionChange = {
-      propertyName: propertyName,
       objectId: baseObject.objectId,
       objectType: baseObject.objectType,
       base: baseObject,

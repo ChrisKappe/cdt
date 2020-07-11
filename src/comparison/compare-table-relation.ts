@@ -41,7 +41,6 @@ export class CompareTableRelation {
             changes,
             member,
             CompareFilterConditions.compareCollection(
-              member,
               baseObject.conditions || [],
               customObject.conditions || []
             )
@@ -52,7 +51,6 @@ export class CompareTableRelation {
             changes,
             member,
             CompareFilterConditions.compareCollection(
-              member,
               baseObject.tableFilters || [],
               customObject.tableFilters || []
             )

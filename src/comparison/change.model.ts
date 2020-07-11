@@ -174,7 +174,6 @@ export interface IPageControlChange
 export interface IPermissionChange
   extends IObjectChange,
     IChangedValue<IPermission> {
-  propertyName: string;
   objectType: string;
   objectId: number;
 }
@@ -206,18 +205,17 @@ export interface IPropertyChange
   extends IChange,
     IUndefinedChangedValue<IProperty> {
   propertyName: string;
-  innerChange?: IChange;
+  change?: IObjectChange;
 }
 
 export interface IMemberChange extends IChange {
   memberName: string;
-  base: any;
-  custom: any;
-  innerChange?: IObjectChange;
+  base?: string | number | boolean;
+  custom?: string | number | boolean;
+  change?: IObjectChange;
 }
 
 export interface ICollectionChange<T> extends IChange {
-  memberName: string;
   changes?: Array<T>;
 }
 
@@ -256,9 +254,7 @@ export class MemberChange {
     if (change.changeType !== ChangeType.NONE)
       changes.push({
         memberName: memberName,
-        base: null,
-        custom: null,
-        innerChange: change,
+        change: change,
         changeType: ChangeType.MODIFY,
       });
   }

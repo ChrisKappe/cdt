@@ -10,13 +10,11 @@ import { IQueryElement } from 'cal-to-json/cal/query-reader';
 
 export class CompareQueryElements {
   static compareCollection(
-    propertyName: string,
     baseElements: Array<IQueryElement>,
     customElements: Array<IQueryElement>
   ): ICollectionChange<IQueryElementChange> {
     const changes: Array<IQueryElementChange> = [];
     const change: ICollectionChange<IQueryElementChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -95,7 +93,6 @@ export class CompareQueryElements {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

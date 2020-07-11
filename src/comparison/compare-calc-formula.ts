@@ -43,7 +43,6 @@ export class CompareCalcFormula {
             changes,
             member,
             CompareFilterConditions.compareCollection(
-              member,
               baseObject.tableFilter || [],
               customObject.tableFilter || []
             )

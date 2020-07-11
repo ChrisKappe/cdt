@@ -3,13 +3,11 @@ import { ChangeType, ILangTextChange, ICollectionChange } from './change.model';
 
 export class CompareTextML {
   static compareCollection(
-    propertyName: string,
     baseTextML: Array<ILangText>,
     customTextML: Array<ILangText>
   ): ICollectionChange<ILangTextChange> {
     const changes: Array<ILangTextChange> = [];
     const change: ICollectionChange<ILangTextChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };

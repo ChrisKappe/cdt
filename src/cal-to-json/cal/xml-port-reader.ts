@@ -2,9 +2,9 @@ import PropertyReader from './property-reader';
 import PropertyMap, { IProperty } from './property-map';
 import IBaseClass, { BaseClass } from '../models/base-class';
 import StringHelper from '../util/string-helper';
-import ObjectReader from './object-reader';
 import IPageControl from '../models/page-control';
 import { RequestPage } from '../models/request-page';
+import SegmentReader from './segment-reader';
 
 export interface IXMLportElement extends IBaseClass {
   id: string;
@@ -59,7 +59,7 @@ export default class XMLportReader {
 
   private static readRequestPage(input: string) {
     input = StringHelper.remove2SpaceIndentation(input);
-    const segments = ObjectReader.splitSegments('Page', input);
+    const segments = SegmentReader.splitSegments('Page', input);
 
     let controls: Array<IPageControl> | undefined,
       properties: Array<IProperty> | undefined;

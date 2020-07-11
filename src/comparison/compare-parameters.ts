@@ -10,13 +10,11 @@ import { CompareVariables } from './compare-variables';
 
 export class CompareParameters {
   static compareCollection(
-    propertyName: string,
     baseParameters: Array<IParameter>,
     customParameters: Array<IParameter>
   ): ICollectionChange<IParameterChange> {
     const changes: Array<IParameterChange> = [];
     const change: ICollectionChange<IParameterChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };

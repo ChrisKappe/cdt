@@ -9,13 +9,11 @@ import {
 
 export class CompareFieldGroups {
   static compareCollection(
-    propertyName: string,
     base: Array<IFieldGroup>,
     custom: Array<IFieldGroup>
   ): ICollectionChange<IFieldGroupChange> {
     const changes: Array<IFieldGroupChange> = [];
     const change: ICollectionChange<IFieldGroupChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };

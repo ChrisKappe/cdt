@@ -40,23 +40,19 @@ export class ExcelReport {
           i => i.memberName === 'CODE'
         );
 
-        if (
-          codeChange &&
-          codeChange.innerChange &&
-          codeChange.innerChange.changes
-        ) {
-          const proceduresChange = codeChange.innerChange.changes.find(
+        if (codeChange && codeChange.change && codeChange.change.changes) {
+          const proceduresChange = codeChange.change.changes.find(
             i => i.memberName === 'Procedures'
           );
 
           if (
             proceduresChange &&
-            proceduresChange.innerChange &&
-            proceduresChange.innerChange.changes
+            proceduresChange.change &&
+            proceduresChange.change.changes
           ) {
-            proceduresChange.innerChange.changes.forEach(procedureChange => {
-              if (procedureChange.innerChange) {
-                const procChange: IProcedureChange = procedureChange.innerChange as any;
+            proceduresChange.change.changes.forEach(procedureChange => {
+              if (procedureChange.change) {
+                const procChange: IProcedureChange = procedureChange.change as any;
                 worksheet.addRow(
                   {
                     objectType: appObjectChange.objectType,

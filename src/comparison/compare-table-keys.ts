@@ -10,13 +10,11 @@ import { CompareProperties } from './compare-properties';
 
 export class CompareTableKeys {
   static compareCollection(
-    propertyName: string,
     baseKeys: Array<ITableKey>,
     customKeys: Array<ITableKey>
   ): ICollectionChange<ITableKeyChange> {
     const changes: Array<ITableKeyChange> = [];
     const change: ICollectionChange<ITableKeyChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -97,7 +95,6 @@ export class CompareTableKeys {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseKey[member] || [],
               customKey[member] || []
             )

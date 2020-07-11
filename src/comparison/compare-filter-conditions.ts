@@ -9,13 +9,11 @@ import {
 
 export class CompareFilterConditions {
   static compareCollection(
-    propertyName: string,
     baseFilterConditions: Array<IFilterCondition>,
     customFilterConditions: Array<IFilterCondition>
   ): ICollectionChange<IFilterConditionChange> {
     const changes: Array<IFilterConditionChange> = [];
     const change: ICollectionChange<IFilterConditionChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };

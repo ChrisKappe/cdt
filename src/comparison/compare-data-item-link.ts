@@ -9,13 +9,11 @@ import { IDataItemLink } from 'cal-to-json/cal/data-item-link-reader';
 
 export class CompareDataItemLinks {
   static compareCollection(
-    propertyName: string,
     baseDataItemLinks: Array<IDataItemLink>,
     customDataItemLinks: Array<IDataItemLink>
   ): ICollectionChange<IDataItemLinkChange> {
     const changes: Array<IDataItemLinkChange> = [];
     const change: ICollectionChange<IDataItemLinkChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };

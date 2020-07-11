@@ -48,7 +48,6 @@ export class CompareTableView {
             changes,
             member,
             CompareFilterConditions.compareCollection(
-              member,
               baseObject.tableFilter || [],
               customObject.tableFilter || []
             )

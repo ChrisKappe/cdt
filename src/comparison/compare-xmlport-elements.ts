@@ -10,13 +10,11 @@ import { IXMLportElement } from 'cal-to-json/cal/xml-port-reader';
 
 export class CompareXMLportElements {
   static compareCollection(
-    propertyName: string,
     baseElements: Array<IXMLportElement>,
     customElements: Array<IXMLportElement>
   ): ICollectionChange<IXMLportElementChange> {
     const changes: Array<IXMLportElementChange> = [];
     const change: ICollectionChange<IXMLportElementChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -96,7 +94,6 @@ export class CompareXMLportElements {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

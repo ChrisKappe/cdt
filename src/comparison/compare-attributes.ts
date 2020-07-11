@@ -9,13 +9,11 @@ import {
 
 export class CompareAttributes {
   static compareCollection(
-    propertyName: string,
     baseAttributes: Array<IAttribute>,
     customAttributes: Array<IAttribute>
   ): ICollectionChange<IAttributeChange> {
     const changes: Array<IAttributeChange> = [];
     const change: ICollectionChange<IAttributeChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };

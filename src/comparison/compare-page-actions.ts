@@ -10,13 +10,11 @@ import { IPageAction } from 'cal-to-json/models/page-action';
 
 export class ComparePageActions {
   static compareCollection(
-    propertyName: string,
     baseActions: Array<IPageAction>,
     customActions: Array<IPageAction>
   ): ICollectionChange<IPageActionChange> {
     const changes: Array<IPageActionChange> = [];
     const change: ICollectionChange<IPageActionChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -90,7 +88,6 @@ export class ComparePageActions {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

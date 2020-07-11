@@ -2,12 +2,10 @@ import { ChangeType, ICollectionChange } from './change.model';
 
 export class CompareXMLportEvents {
   static compareCollection(
-    propertyName: string,
     baseElements: Array<any>,
     customElements: Array<any>
   ): ICollectionChange<any> {
     const change: ICollectionChange<any> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
     };
 

@@ -114,7 +114,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member],
               customObject[member]
             )
@@ -125,7 +124,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareTableFields.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -136,7 +134,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareTableKeys.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -147,7 +144,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareFieldGroups.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -158,7 +154,6 @@ export class CompareAppObjects {
             changes,
             member,
             ComparePageControls.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -169,7 +164,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareReportDataItems.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -194,7 +188,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareReportLabels.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -206,7 +199,6 @@ export class CompareAppObjects {
               changes,
               member,
               CompareXMLportElements.compareCollection(
-                member,
                 baseObject[member] || [],
                 customObject[member] || []
               )
@@ -217,7 +209,6 @@ export class CompareAppObjects {
               changes,
               member,
               CompareQueryElements.compareCollection(
-                member,
                 baseObject[member] || [],
                 customObject[member] || []
               )
@@ -231,7 +222,6 @@ export class CompareAppObjects {
             changes,
             member,
             CompareXMLportEvents.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

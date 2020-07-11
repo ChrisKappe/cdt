@@ -10,13 +10,11 @@ import { CompareTextML } from './compare-text-ml';
 
 export class CompareVariables {
   static compareCollection(
-    propertyName: string,
     baseVariables: Array<IVariable>,
     customVariables: Array<IVariable>
   ): ICollectionChange<IVariableChange> {
     const changes: Array<IVariableChange> = [];
     const change: ICollectionChange<IVariableChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -130,7 +128,6 @@ export class CompareVariables {
       changes,
       'TextML',
       CompareTextML.compareCollection(
-        'textML',
         baseObject.textML || [],
         customObject.textML || []
       )

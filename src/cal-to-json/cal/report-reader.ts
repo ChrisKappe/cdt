@@ -2,10 +2,10 @@ import StringHelper from '../util/string-helper';
 import IReportDataItem, { ReportDataItem } from '../models/report-data-item';
 import PropertyReader from './property-reader';
 import PropertyMap, { IProperty } from './property-map';
-import ObjectReader from './object-reader';
 import IReportLabel, { ReportLabel } from '../models/report-label';
 import IRequestPage, { RequestPage } from '../models/request-page';
 import IPageControl from '../models/page-control';
+import SegmentReader from './segment-reader';
 
 export default class ReportReader {
   static readSegment(name: string, input: string) {
@@ -80,7 +80,7 @@ export default class ReportReader {
 
   private static readRequestPage(input: string): IRequestPage {
     input = StringHelper.remove2SpaceIndentation(input);
-    const segments = ObjectReader.splitSegments('Page', input);
+    const segments = SegmentReader.splitSegments('Page', input);
 
     let controls: Array<IPageControl> | undefined,
       properties: Array<IProperty> | undefined;

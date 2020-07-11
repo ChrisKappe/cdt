@@ -10,13 +10,11 @@ import IReportDataItem from 'cal-to-json/models/report-data-item';
 
 export class CompareReportDataItems {
   static compareCollection(
-    propertyName: string,
     baseDataItems: Array<IReportDataItem>,
     customDataItems: Array<IReportDataItem>
   ): ICollectionChange<IReportDataItemChange> {
     const changes: Array<IReportDataItemChange> = [];
     const change: ICollectionChange<IReportDataItemChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -95,7 +93,6 @@ export class CompareReportDataItems {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

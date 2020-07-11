@@ -30,7 +30,6 @@ export class CompareCode {
             changes,
             member,
             CompareVariables.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -41,7 +40,6 @@ export class CompareCode {
             changes,
             member,
             CompareProcedures.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )

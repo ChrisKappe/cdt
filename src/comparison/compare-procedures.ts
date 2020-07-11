@@ -13,13 +13,11 @@ import { CompareReturnType } from './compare-return-type';
 
 export class CompareProcedures {
   static compareCollection(
-    propertyName: string,
     baseProcedures: Array<IProcedure>,
     customProcedures: Array<IProcedure>
   ): ICollectionChange<IProcedureChange> {
     const changes: Array<IProcedureChange> = [];
     const change: ICollectionChange<IProcedureChange> = {
-      memberName: propertyName,
       changeType: ChangeType.NONE,
       changes: changes,
     };
@@ -67,47 +65,44 @@ export class CompareProcedures {
   }
 
   static compare(
-    base: IProcedure | any,
-    custom: IProcedure | any
+    baseObject: IProcedure | any,
+    customObject: IProcedure | any
   ): IProcedureChange {
     const changes: Array<IMemberChange> = [];
     const change: IProcedureChange = {
-      procedureId: base.id,
-      procedureName: base.name,
-      base: base,
-      custom: custom,
+      procedureId: baseObject.id,
+      procedureName: baseObject.name,
+      base: baseObject,
+      custom: customObject,
       changeType: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in base) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'variables':
           const varChange = CompareVariables.compareCollection(
-            key,
-            base.variables || [],
-            custom.variables || []
+            baseObject.variables || [],
+            customObject.variables || []
           );
-          MemberChange.AddChangeObject(changes, key, varChange);
+          MemberChange.AddChangeObject(changes, member, varChange);
           break;
         case 'parameters':
           const paramsChange = CompareParameters.compareCollection(
-            key,
-            base.parameters || [],
-            custom.parameters || []
+            baseObject.parameters || [],
+            customObject.parameters || []
           );
-          MemberChange.AddChangeObject(changes, key, paramsChange);
+          MemberChange.AddChangeObject(changes, member, paramsChange);
           break;
         case 'attributes':
           const attributesChange = CompareAttributes.compareCollection(
-            key,
-            base.attributes || [],
-            custom.attributes || []
+            baseObject.attributes || [],
+            customObject.attributes || []
           );
-          MemberChange.AddChangeObject(changes, key, attributesChange);
+          MemberChange.AddChangeObject(changes, member, attributesChange);
           break;
         case 'id':
         case 'name':
@@ -115,21 +110,31 @@ export class CompareProcedures {
         case 'local':
         case 'eventVariable':
         case 'eventVariableId':
-          MemberChange.AddChange(changes, key, base[key], custom[key]);
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'returns':
-          if (base.returns && custom.returns) {
+          if (baseObject.returns && customObject.returns) {
             const returnsChange = CompareReturnType.compare(
-              base.returns,
-              custom.returns
+              baseObject.returns,
+              customObject.returns
             );
-            MemberChange.AddChangeObject(changes, key, returnsChange);
+            MemberChange.AddChangeObject(changes, member, returnsChange);
           } else {
-            MemberChange.AddChange(changes, key, base[key], custom[key]);
+            MemberChange.AddChange(
+              changes,
+              member,
+              baseObject[member],
+              customObject[member]
+            );
           }
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

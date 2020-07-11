@@ -32,7 +32,6 @@ export class CompareRequestPage {
             changes,
             member,
             ComparePageControls.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
@@ -43,7 +42,6 @@ export class CompareRequestPage {
             changes,
             member,
             CompareProperties.compareCollection(
-              member,
               baseObject[member] || [],
               customObject[member] || []
             )
