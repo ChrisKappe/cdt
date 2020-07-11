@@ -1,5 +1,11 @@
 import { CompareProperties } from './compare-properties';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IXMLportElementChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { IXMLportElement } from 'cal-to-json/cal/xml-port-reader';
 
 const ElementCollectionName = 'XMLportElements';
@@ -7,12 +13,14 @@ const ElementName = 'XMLportElement';
 
 export class CompareXMLportElements {
   static compareCollection(
+    propertyName: string,
     baseElements: Array<IXMLportElement>,
     customElements: Array<IXMLportElement>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IXMLportElementChange> {
+    const changes: Array<IXMLportElementChange> = [];
+    const change: ICollectionChange<IXMLportElementChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -32,6 +40,8 @@ export class CompareXMLportElements {
         changes.push({
           element: ElementName,
           id: baseElement.id,
+          base: baseElement,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -46,6 +56,8 @@ export class CompareXMLportElements {
         changes.push({
           element: ElementName,
           id: customElement.id,
+          base: null,
+          custom: customElement,
           change: ChangeType.ADD,
         });
       }
@@ -56,19 +68,21 @@ export class CompareXMLportElements {
   }
 
   static compare(
-    baseElement: IXMLportElement,
-    customElement: IXMLportElement
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IXMLportElement,
+    customObject: IXMLportElement
+  ): IXMLportElementChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IXMLportElementChange = {
       element: ElementName,
-      id: baseElement.id,
+      id: baseObject.id,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseElement) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
@@ -77,26 +91,26 @@ export class CompareXMLportElements {
         case 'nodeName':
         case 'nodeType':
         case 'sourceType':
-          if (baseElement[key] !== customElement[key]) {
-            changes.push({
-              element: 'Property',
-              name: 'dataType',
-              base: baseElement[key],
-              custom: customElement[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseElement[key] || [],
-            customElement[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

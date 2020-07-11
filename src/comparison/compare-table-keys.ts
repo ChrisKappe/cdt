@@ -1,5 +1,11 @@
 import ITableKey from 'cal-to-json/cal/table-key';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ITableKeyChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareProperties } from './compare-properties';
 
 const ElementCollectionName = 'TableKeys';
@@ -7,12 +13,14 @@ const ElementName = 'TableKey';
 
 export class CompareTableKeys {
   static compareCollection(
+    propertyName: string,
     baseKeys: Array<ITableKey>,
     customKeys: Array<ITableKey>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<ITableKeyChange> {
+    const changes: Array<ITableKeyChange> = [];
+    const change: ICollectionChange<ITableKeyChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -33,6 +41,8 @@ export class CompareTableKeys {
         changes.push({
           element: ElementName,
           fields: baseKey.fields.join(','),
+          base: baseKey,
+          custom: null,
           change: ChangeType.DELETE,
         });
     });
@@ -46,6 +56,8 @@ export class CompareTableKeys {
         changes.push({
           element: ElementName,
           fields: customKey.fields.join(', '),
+          base: null,
+          custom: customKey,
           change: ChangeType.ADD,
         });
       }
@@ -55,42 +67,51 @@ export class CompareTableKeys {
     return change;
   }
 
-  static compare(baseKey: ITableKey, customKey: ITableKey): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(baseKey: ITableKey, customKey: ITableKey): ITableKeyChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ITableKeyChange = {
       element: ElementName,
       fields: baseKey.fields.join(', '),
+      base: baseKey,
+      custom: customKey,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseKey) {
-      switch (key) {
+    for (const member in baseKey) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'fields':
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseKey.fields.join(','),
+            customKey.fields.join(',')
+          );
+          break;
         case 'enabled':
-          if (baseKey.enabled !== customKey.enabled) {
-            changes.push({
-              element: 'Property',
-              name: 'enables',
-              base: baseKey.enabled,
-              custom: customKey.enabled,
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseKey[member],
+            customKey[member]
+          );
           break;
         case 'properties':
-          const propsChange = CompareProperties.compareCollection(
-            key,
-            baseKey[key] || [],
-            customKey[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseKey[member] || [],
+              customKey[member] || []
+            )
           );
-          if (propsChange.change !== ChangeType.NONE) changes.push(propsChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

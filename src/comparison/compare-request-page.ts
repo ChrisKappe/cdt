@@ -1,5 +1,11 @@
 import { CompareProperties } from './compare-properties';
-import { IChange, ChangeType } from './change.model';
+import {
+  IChange,
+  ChangeType,
+  IRequestPageChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import IRequestPage from 'cal-to-json/models/request-page';
 import { ComparePageControls } from './compare-page-controls';
 
@@ -7,39 +13,47 @@ const ElementName = 'RequestPage';
 
 export class CompareRequestPage {
   static compare(
-    baseRequestPage: IRequestPage,
-    customRequestPage: IRequestPage
+    baseObject: IRequestPage,
+    customObject: IRequestPage
   ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    const changes: Array<IMemberChange> = [];
+    const change: IRequestPageChange = {
       element: ElementName,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseRequestPage) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'controls':
-          const controlsChange = ComparePageControls.compareCollection(
-            baseRequestPage[key] || [],
-            customRequestPage[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            ComparePageControls.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (controlsChange.change !== ChangeType.NONE)
-            changes.push(controlsChange);
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseRequestPage[key] || [],
-            customRequestPage[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

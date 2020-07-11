@@ -1,5 +1,11 @@
 import { CompareProperties } from './compare-properties';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IReportDataItemChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import IReportDataItem from 'cal-to-json/models/report-data-item';
 
 const ElementCollectionName = 'ReportDataItems';
@@ -7,12 +13,14 @@ const ElementName = 'ReportDataItem';
 
 export class CompareReportDataItems {
   static compareCollection(
+    propertyName: string,
     baseDataItems: Array<IReportDataItem>,
     customDataItems: Array<IReportDataItem>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IReportDataItemChange> {
+    const changes: Array<IReportDataItemChange> = [];
+    const change: ICollectionChange<IReportDataItemChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -32,6 +40,8 @@ export class CompareReportDataItems {
         changes.push({
           element: ElementName,
           id: baseDataItem.id,
+          base: baseDataItem,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -46,6 +56,8 @@ export class CompareReportDataItems {
         changes.push({
           element: ElementName,
           id: customDataItem.id,
+          base: null,
+          custom: customDataItem,
           change: ChangeType.ADD,
         });
       }
@@ -56,19 +68,21 @@ export class CompareReportDataItems {
   }
 
   static compare(
-    baseDataItem: IReportDataItem,
-    customDataItem: IReportDataItem
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IReportDataItem,
+    customObject: IReportDataItem
+  ): IReportDataItemChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IReportDataItemChange = {
       element: ElementName,
-      id: baseDataItem.id,
+      id: baseObject.id,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseDataItem) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
@@ -76,26 +90,26 @@ export class CompareReportDataItems {
         case 'indentation':
         case 'name':
         case 'dataType':
-          if (baseDataItem[key] !== customDataItem[key]) {
-            changes.push({
-              element: 'Property',
-              name: 'dataType',
-              base: baseDataItem[key],
-              custom: customDataItem[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseDataItem[key] || [],
-            customDataItem[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

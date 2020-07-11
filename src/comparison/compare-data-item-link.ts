@@ -1,4 +1,10 @@
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IDataItemLinkChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { IDataItemLink } from 'cal-to-json/cal/data-item-link-reader';
 
 const ElementCollectionName = 'DataItemLinks';
@@ -6,12 +12,14 @@ const ElementName = 'DataItemLink';
 
 export class CompareDataItemLinks {
   static compareCollection(
+    propertyName: string,
     baseDataItemLinks: Array<IDataItemLink>,
     customDataItemLinks: Array<IDataItemLink>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IDataItemLinkChange> {
+    const changes: Array<IDataItemLinkChange> = [];
+    const change: ICollectionChange<IDataItemLinkChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -31,6 +39,8 @@ export class CompareDataItemLinks {
         changes.push({
           element: ElementName,
           field: baseDataItemLink.field,
+          base: baseDataItemLink,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -45,6 +55,8 @@ export class CompareDataItemLinks {
         changes.push({
           element: ElementName,
           field: customDataItemLink.field,
+          base: null,
+          custom: customDataItemLink,
           change: ChangeType.ADD,
         });
       }
@@ -55,37 +67,36 @@ export class CompareDataItemLinks {
   }
 
   static compare(
-    baseDataItemLink: IDataItemLink,
-    customDataItemLink: IDataItemLink
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IDataItemLink,
+    customObject: IDataItemLink
+  ): IDataItemLinkChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IDataItemLinkChange = {
       element: ElementName,
-      field: baseDataItemLink.field,
+      field: baseObject.field,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseDataItemLink) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'field':
         case 'referenceDataItem':
         case 'referenceField':
-          if (baseDataItemLink[key] !== customDataItemLink[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseDataItemLink[key],
-              custom: customDataItemLink[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

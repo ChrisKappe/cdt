@@ -1,25 +1,33 @@
 import IFieldGroup from 'cal-to-json/models/field-group';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IFieldGroupChange,
+  IMemberChange,
+  ICollectionChange,
+  MemberChange,
+} from './change.model';
 
 const ElementCollectionName = 'FieldGroups';
 const ElementName = 'FieldGroup';
 
 export class CompareFieldGroups {
   static compareCollection(
-    baseFieldGroups: Array<IFieldGroup>,
-    customFieldGroups: Array<IFieldGroup>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    propertyName: string,
+    base: Array<IFieldGroup>,
+    custom: Array<IFieldGroup>
+  ): ICollectionChange<IFieldGroupChange> {
+    const changes: Array<IFieldGroupChange> = [];
+    const change: ICollectionChange<IFieldGroupChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
 
     const comparedFieldGroups: Array<IFieldGroup> = [];
 
-    baseFieldGroups.forEach(baseFieldGroup => {
-      let customFieldGroup = customFieldGroups.find(
+    base.forEach(baseFieldGroup => {
+      let customFieldGroup = custom.find(
         item => item.name === baseFieldGroup.name
       );
 
@@ -33,11 +41,13 @@ export class CompareFieldGroups {
           element: ElementName,
           name: baseFieldGroup.name,
           fields: baseFieldGroup.fields.join(', '),
+          base: baseFieldGroup,
+          custom: null,
           change: ChangeType.DELETE,
         });
     });
 
-    customFieldGroups.forEach(customFieldGroup => {
+    custom.forEach(customFieldGroup => {
       let fieldGroupFound = comparedFieldGroups.find(
         item => item.name === customFieldGroup.name
       );
@@ -47,6 +57,8 @@ export class CompareFieldGroups {
           element: ElementName,
           name: customFieldGroup.name,
           fields: customFieldGroup.fields.join(', '),
+          base: null,
+          custom: customFieldGroup,
           change: ChangeType.ADD,
         });
       }
@@ -57,51 +69,44 @@ export class CompareFieldGroups {
   }
 
   static compare(
-    baseFieldGroup: IFieldGroup,
-    customFieldGroup: IFieldGroup
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IFieldGroup,
+    customObject: IFieldGroup
+  ): IFieldGroupChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IFieldGroupChange = {
       element: ElementName,
-      name: baseFieldGroup.name,
-      fields: baseFieldGroup.fields.join(', '),
+      name: baseObject.name,
+      fields: baseObject.fields.join(', '),
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseFieldGroup) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'fields':
-          if (
-            baseFieldGroup.fields.join(',') !==
-            customFieldGroup.fields.join(',')
-          ) {
-            changes.push({
-              element: 'Property',
-              name: 'fields',
-              base: baseFieldGroup.fields.join(', '),
-              custom: customFieldGroup.fields.join(', '),
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject.fields.join(','),
+            customObject.fields.join(',')
+          );
           break;
         case 'name':
         case 'id':
-          if (baseFieldGroup[key] !== customFieldGroup[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseFieldGroup[key],
-              custom: customFieldGroup[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

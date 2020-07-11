@@ -1,5 +1,11 @@
 import { IVariable } from 'cal-to-json/cal/variable-reader';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IVariableChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareTextML } from './compare-text-ml';
 
 const ElementCollectionName = 'Variables';
@@ -7,12 +13,14 @@ const ElementName = 'Variable';
 
 export class CompareVariables {
   static compareCollection(
+    propertyName: string,
     baseVariables: Array<IVariable>,
     customVariables: Array<IVariable>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IVariableChange> {
+    const changes: Array<IVariableChange> = [];
+    const change: ICollectionChange<IVariableChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -33,6 +41,8 @@ export class CompareVariables {
           element: ElementName,
           id: baseVariable.id,
           name: baseVariable.name,
+          base: baseVariable,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -48,6 +58,8 @@ export class CompareVariables {
           element: ElementName,
           id: customVariable.id,
           name: customVariable.name,
+          base: null,
+          custom: customVariable,
           change: ChangeType.ADD,
         });
       }
@@ -57,93 +69,79 @@ export class CompareVariables {
     return change;
   }
 
-  static compare(baseVariable: IVariable, customVariable: IVariable) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(
+    baseObject: IVariable,
+    customObject: IVariable
+  ): IVariableChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IVariableChange = {
       element: ElementName,
-      id: baseVariable.id,
-      name: baseVariable.name,
+      id: baseObject.id,
+      name: baseObject.name,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    if (baseVariable.length !== customVariable.length) {
-      changes.push({
-        element: 'Property',
-        name: 'length',
-        base: baseVariable.length,
-        custom: customVariable.length,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'Length',
+      baseObject.length,
+      customObject.length
+    );
 
-    if (baseVariable.datatype !== customVariable.datatype) {
-      changes.push({
-        element: 'Property',
-        name: 'datatype',
-        base: baseVariable.datatype,
-        custom: customVariable.datatype,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'DataType',
+      baseObject.datatype,
+      customObject.datatype
+    );
 
-    if (baseVariable.dimensions !== customVariable.dimensions) {
-      changes.push({
-        element: 'Property',
-        name: 'dimensions',
-        base: baseVariable.dimensions,
-        custom: customVariable.dimensions,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'Dimensions',
+      baseObject.dimensions,
+      customObject.dimensions
+    );
 
-    if (baseVariable.temporary !== customVariable.temporary) {
-      changes.push({
-        element: 'Property',
-        name: 'temporary',
-        base: baseVariable.temporary,
-        custom: customVariable.temporary,
-        change: ChangeType.MODIFY,
-      });
-    }
-    if (baseVariable.subType !== customVariable.subType) {
-      changes.push({
-        element: 'Property',
-        name: 'subType',
-        base: baseVariable.subType,
-        custom: customVariable.subType,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'Temporary',
+      baseObject.temporary,
+      customObject.temporary
+    );
 
-    if (baseVariable.inDataSet !== customVariable.inDataSet) {
-      changes.push({
-        element: 'Property',
-        name: 'inDataSet',
-        base: baseVariable.inDataSet,
-        custom: customVariable.inDataSet,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'SubType',
+      baseObject.subType,
+      customObject.subType
+    );
 
-    if (baseVariable.securityFiltering !== customVariable.securityFiltering) {
-      changes.push({
-        element: 'Property',
-        name: 'securityFiltering',
-        base: baseVariable.securityFiltering,
-        custom: customVariable.securityFiltering,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'InDataSet',
+      baseObject.inDataSet,
+      customObject.inDataSet
+    );
 
-    if (baseVariable.textML !== customVariable.textML) {
-      const textMLChange = CompareTextML.compareCollection(
+    MemberChange.AddChange(
+      changes,
+      'SecurityFiltering',
+      baseObject.securityFiltering,
+      customObject.securityFiltering
+    );
+
+    MemberChange.AddChangeObject(
+      changes,
+      'TextML',
+      CompareTextML.compareCollection(
         'textML',
-        baseVariable.textML || [],
-        customVariable.textML || []
-      );
-      if (textMLChange.change !== ChangeType.NONE) changes.push(textMLChange);
-    }
+        baseObject.textML || [],
+        customObject.textML || []
+      )
+    );
 
     if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;

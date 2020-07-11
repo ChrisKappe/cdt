@@ -1,5 +1,10 @@
 import ICalcFormula from 'cal-to-json/models/calc-formula';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ICalcFormulaChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
 const ElementName = 'CalcFormula';
@@ -7,19 +12,21 @@ const ElementName = 'CalcFormula';
 export class CompareCalcFormula {
   static compare(
     propertyName: string,
-    baseCalcFormula: ICalcFormula,
-    customCalcFormula: ICalcFormula
-  ) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: ICalcFormula,
+    customObject: ICalcFormula
+  ): ICalcFormulaChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ICalcFormulaChange = {
       element: ElementName,
-      name: propertyName,
+      propertyName: propertyName,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseCalcFormula) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
@@ -27,26 +34,26 @@ export class CompareCalcFormula {
         case 'reverseSign':
         case 'table':
         case 'field':
-          if (baseCalcFormula[key] !== customCalcFormula[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseCalcFormula[key],
-              custom: customCalcFormula[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'tableFilter':
-          const tableFiltersChange = CompareFilterConditions.compareCollection(
-            baseCalcFormula.tableFilter || [],
-            customCalcFormula.tableFilter || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareFilterConditions.compareCollection(
+              member,
+              baseObject.tableFilter || [],
+              customObject.tableFilter || []
+            )
           );
-          if (tableFiltersChange.change !== ChangeType.NONE)
-            changes.push(tableFiltersChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

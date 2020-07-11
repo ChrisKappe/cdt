@@ -1,18 +1,26 @@
 import { CompareProperties } from './compare-properties';
 import ITableField from 'cal-to-json/models/table-field';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ITableFieldChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 
 const ElementCollectionName = 'TableFields';
 const ElementName = 'TableField';
 
 export class CompareTableFields {
   static compareCollection(
+    propertyName: string,
     baseFields: Array<ITableField>,
     customFields: Array<ITableField>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<ITableFieldChange> {
+    const changes: Array<ITableFieldChange> = [];
+    const change: ICollectionChange<ITableFieldChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -31,8 +39,10 @@ export class CompareTableFields {
       } else {
         changes.push({
           element: ElementName,
-          id: baseField.id,
-          name: baseField.name,
+          fieldId: baseField.id,
+          fieldName: baseField.name,
+          base: baseField,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -46,8 +56,10 @@ export class CompareTableFields {
       if (!fieldFound) {
         changes.push({
           element: ElementName,
-          id: customField.id,
-          name: customField.name,
+          fieldId: customField.id,
+          fieldName: customField.name,
+          base: null,
+          custom: customField,
           change: ChangeType.ADD,
         });
       }
@@ -57,18 +69,23 @@ export class CompareTableFields {
     return change;
   }
 
-  static compare(baseField: ITableField, customField: ITableField): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(
+    baseObject: ITableField,
+    customObject: ITableField
+  ): ITableFieldChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ITableFieldChange = {
       element: ElementName,
-      id: baseField.id,
-      name: baseField.name,
+      fieldId: baseObject.id,
+      fieldName: baseObject.name,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseField) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
@@ -76,26 +93,26 @@ export class CompareTableFields {
         case 'id':
         case 'dataType':
         case 'enabled':
-          if (baseField[key] !== customField[key]) {
-            changes.push({
-              element: 'Property',
-              name: 'dataType',
-              base: baseField[key],
-              custom: customField[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseField[key] || [],
-            customField[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

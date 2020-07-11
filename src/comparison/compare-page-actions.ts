@@ -1,5 +1,11 @@
 import { CompareProperties } from './compare-properties';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IPageActionChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { IPageAction } from 'cal-to-json/models/page-action';
 
 const ElementCollectionName = 'PageActions';
@@ -7,12 +13,14 @@ const ElementName = 'PageAction';
 
 export class ComparePageActions {
   static compareCollection(
+    propertyName: string,
     baseActions: Array<IPageAction>,
     customActions: Array<IPageAction>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IPageActionChange> {
+    const changes: Array<IPageActionChange> = [];
+    const change: ICollectionChange<IPageActionChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -30,20 +38,24 @@ export class ComparePageActions {
         changes.push({
           element: ElementName,
           id: baseAction.id,
+          base: baseAction,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
     });
 
-    customActions.forEach(customField => {
+    customActions.forEach(customAction => {
       let actionFound = comparedActions.find(
-        item => item.id === customField.id
+        item => item.id === customAction.id
       );
 
       if (!actionFound) {
         changes.push({
           element: ElementName,
-          id: customField.id,
+          id: customAction.id,
+          base: null,
+          custom: customAction,
           change: ChangeType.ADD,
         });
       }
@@ -53,41 +65,46 @@ export class ComparePageActions {
     return change;
   }
 
-  static compare(baseAction: IPageAction, customAction: IPageAction): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(
+    baseObject: IPageAction,
+    customObject: IPageAction
+  ): IPageActionChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IPageActionChange = {
       element: ElementName,
-      id: baseAction.id,
+      id: baseObject.id,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseAction) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'id':
-          if (baseAction[key] !== customAction[key]) {
-            changes.push({
-              element: 'Property',
-              name: 'dataType',
-              base: baseAction[key],
-              custom: customAction[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseAction[key] || [],
-            customAction[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

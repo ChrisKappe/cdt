@@ -1,5 +1,11 @@
 import { IProcedure } from 'cal-to-json/models/procedure';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IProcedureChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareVariables } from './compare-variables';
 import { CompareParameters } from './compare-parameters';
 import { CompareAttributes } from './compare-attributes';
@@ -10,12 +16,14 @@ const ElementName = 'Procedure';
 
 export class CompareProcedures {
   static compareCollection(
+    propertyName: string,
     baseProcedures: Array<IProcedure>,
     customProcedures: Array<IProcedure>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IProcedureChange> {
+    const changes: Array<IProcedureChange> = [];
+    const change: ICollectionChange<IProcedureChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -35,8 +43,10 @@ export class CompareProcedures {
       } else
         changes.push({
           element: ElementName,
-          id: baseProcedure.id,
-          name: baseProcedure.name,
+          procedureId: baseProcedure.id,
+          procedureName: baseProcedure.name,
+          base: baseProcedure,
+          custom: null,
           change: ChangeType.DELETE,
         });
     });
@@ -49,8 +59,10 @@ export class CompareProcedures {
       if (!procedureFound) {
         changes.push({
           element: ElementName,
-          id: customProcedure.id,
-          name: customProcedure.name,
+          procedureId: customProcedure.id,
+          procedureName: customProcedure.name,
+          base: null,
+          custom: customProcedure,
           change: ChangeType.ADD,
         });
       }
@@ -61,46 +73,48 @@ export class CompareProcedures {
   }
 
   static compare(
-    baseProcedure: IProcedure | any,
-    customProcedure: IProcedure | any
-  ) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    base: IProcedure | any,
+    custom: IProcedure | any
+  ): IProcedureChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IProcedureChange = {
       element: ElementName,
-      id: baseProcedure.id,
-      name: baseProcedure.name,
+      procedureId: base.id,
+      procedureName: base.name,
+      base: base,
+      custom: custom,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseProcedure) {
+    for (const key in base) {
       switch (key) {
         case 'className':
         case 'constructor':
           break;
         case 'variables':
           const varChange = CompareVariables.compareCollection(
-            baseProcedure.variables || [],
-            customProcedure.variables || []
+            key,
+            base.variables || [],
+            custom.variables || []
           );
-
-          if (varChange.change !== ChangeType.NONE) changes.push(varChange);
+          MemberChange.AddChangeObject(changes, key, varChange);
           break;
         case 'parameters':
           const paramsChange = CompareParameters.compareCollection(
-            baseProcedure.parameters || [],
-            customProcedure.parameters || []
+            key,
+            base.parameters || [],
+            custom.parameters || []
           );
-          if (paramsChange.change !== ChangeType.NONE)
-            changes.push(paramsChange);
+          MemberChange.AddChangeObject(changes, key, paramsChange);
           break;
         case 'attributes':
           const attributesChange = CompareAttributes.compareCollection(
-            baseProcedure.attributes || [],
-            customProcedure.attributes || []
+            key,
+            base.attributes || [],
+            custom.attributes || []
           );
-          if (attributesChange.change !== ChangeType.NONE)
-            changes.push(attributesChange);
+          MemberChange.AddChangeObject(changes, key, attributesChange);
           break;
         case 'id':
         case 'name':
@@ -108,34 +122,17 @@ export class CompareProcedures {
         case 'local':
         case 'eventVariable':
         case 'eventVariableId':
-          if (baseProcedure[key] !== customProcedure[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseProcedure[key],
-              custom: customProcedure[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(changes, key, base[key], custom[key]);
           break;
         case 'returns':
-          if (baseProcedure.returns && customProcedure.returns) {
+          if (base.returns && custom.returns) {
             const returnsChange = CompareReturnType.compare(
-              baseProcedure.returns,
-              customProcedure.returns
+              base.returns,
+              custom.returns
             );
-            if (returnsChange.change !== ChangeType.NONE)
-              changes.push(returnsChange);
-          } else if (!baseProcedure.returns && customProcedure.returns) {
-            changes.push({
-              element: 'ReturnType',
-              change: ChangeType.ADD,
-            });
-          } else if (baseProcedure.returns && !customProcedure.returns) {
-            changes.push({
-              element: 'ReturnType',
-              change: ChangeType.DELETE,
-            });
+            MemberChange.AddChangeObject(changes, key, returnsChange);
+          } else {
+            MemberChange.AddChange(changes, key, base[key], custom[key]);
           }
           break;
         default:

@@ -1,17 +1,25 @@
 import { IAttribute } from 'cal-to-json/cal/attribute-reader';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IAttributeChange,
+  IMemberChange,
+  ICollectionChange,
+  MemberChange,
+} from './change.model';
 
 const ElementCollectionName = 'Attributes';
 const ElementName = 'Attribute';
 
 export class CompareAttributes {
   static compareCollection(
+    propertyName: string,
     baseAttributes: Array<IAttribute>,
     customAttributes: Array<IAttribute>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IAttributeChange> {
+    const changes: Array<IAttributeChange> = [];
+    const change: ICollectionChange<IAttributeChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -30,7 +38,9 @@ export class CompareAttributes {
       } else {
         changes.push({
           element: ElementName,
-          name: baseAttribute.type,
+          attributeType: baseAttribute.type,
+          base: baseAttribute,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -44,7 +54,9 @@ export class CompareAttributes {
       if (!attributeFound) {
         changes.push({
           element: ElementName,
-          name: customAttribute.type,
+          attributeType: customAttribute.type,
+          base: null,
+          custom: customAttribute,
           change: ChangeType.ADD,
         });
       }
@@ -55,18 +67,20 @@ export class CompareAttributes {
   }
 
   static compare(
-    baseAttribute: IAttribute | any,
-    customAttribute: IAttribute | any
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IAttribute | any,
+    customObject: IAttribute | any
+  ): IAttributeChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IAttributeChange = {
       element: ElementName,
-      name: baseAttribute.type,
+      attributeType: baseObject.type,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseAttribute) {
+    for (const key in baseObject) {
       switch (key) {
         case 'className':
         case 'constructor':
@@ -80,15 +94,12 @@ export class CompareAttributes {
         case 'publisherElement':
         case 'onMissingLicense':
         case 'onMissingPermission':
-          if (baseAttribute[key] !== customAttribute[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseAttribute[key],
-              custom: customAttribute[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            key,
+            baseObject[key],
+            customObject[key]
+          );
           break;
         default:
           throw new Error(`${key} not implemented`);

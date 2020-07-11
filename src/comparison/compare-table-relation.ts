@@ -1,87 +1,88 @@
 import ITableRelation from 'cal-to-json/models/table-relation';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ITableRelationChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
 const ElementName = 'TableRelation';
 
 export class CompareTableRelation {
   static compare(
-    property: string,
-    baseTableRelation: ITableRelation,
-    customTableRelation: ITableRelation
-  ) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    propertyName: string,
+    baseObject: ITableRelation,
+    customObject: ITableRelation
+  ): ITableRelationChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ITableRelationChange = {
       element: ElementName,
-      name: property,
+      propertyName: propertyName,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseTableRelation) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'table':
         case 'field':
-          if (baseTableRelation[key] !== customTableRelation[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseTableRelation[key],
-              custom: customTableRelation[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'conditions':
-          const conditionsChange = CompareFilterConditions.compareCollection(
-            baseTableRelation.conditions || [],
-            customTableRelation.conditions || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareFilterConditions.compareCollection(
+              member,
+              baseObject.conditions || [],
+              customObject.conditions || []
+            )
           );
-          if (conditionsChange.change !== ChangeType.NONE)
-            changes.push(conditionsChange);
           break;
         case 'tableFilters':
-          const tableFiltersChange = CompareFilterConditions.compareCollection(
-            baseTableRelation.tableFilters || [],
-            customTableRelation.tableFilters || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareFilterConditions.compareCollection(
+              member,
+              baseObject.tableFilters || [],
+              customObject.tableFilters || []
+            )
           );
-          if (tableFiltersChange.change !== ChangeType.NONE)
-            changes.push(tableFiltersChange);
           break;
         case 'alternate':
-          if (baseTableRelation.alternate && customTableRelation.alternate) {
-            const alternateChange = this.compare(
-              'alternate',
-              baseTableRelation.alternate,
-              customTableRelation.alternate
+          if (baseObject.alternate && customObject.alternate) {
+            MemberChange.AddChangeObject(
+              changes,
+              member,
+              this.compare(
+                'alternate',
+                baseObject.alternate,
+                customObject.alternate
+              )
             );
-            if (alternateChange.change !== ChangeType.NONE)
-              changes.push(alternateChange);
-          } else if (
-            !baseTableRelation.alternate &&
-            customTableRelation.alternate
-          ) {
-            changes.push({
-              element: 'Property',
-              name: 'alternate',
-              change: ChangeType.ADD,
-            });
-          } else if (
-            baseTableRelation.alternate &&
-            !customTableRelation.alternate
-          ) {
-            changes.push({
-              element: 'Property',
-              name: 'alternate',
-              change: ChangeType.DELETE,
-            });
+          } else {
+            MemberChange.AddChange(
+              changes,
+              member,
+              baseObject.alternate,
+              customObject.alternate
+            );
           }
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

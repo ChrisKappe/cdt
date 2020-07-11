@@ -1,5 +1,11 @@
 import { CompareProperties } from './compare-properties';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IPageControlChange,
+  IMemberChange,
+  ICollectionChange,
+  MemberChange,
+} from './change.model';
 import IPageControl from 'cal-to-json/models/page-control';
 
 const ElementCollectionName = 'PageControls';
@@ -7,12 +13,14 @@ const ElementName = 'PageControl';
 
 export class ComparePageControls {
   static compareCollection(
+    propertyName: string,
     baseControls: Array<IPageControl>,
     customControls: Array<IPageControl>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IPageControlChange> {
+    const changes: Array<IPageControlChange> = [];
+    const change: ICollectionChange<IPageControlChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -32,6 +40,8 @@ export class ComparePageControls {
         changes.push({
           element: ElementName,
           id: baseControl.id,
+          base: baseControl,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -46,6 +56,8 @@ export class ComparePageControls {
         changes.push({
           element: ElementName,
           id: customControl.id,
+          base: null,
+          custom: customControl,
           change: ChangeType.ADD,
         });
       }
@@ -56,45 +68,47 @@ export class ComparePageControls {
   }
 
   static compare(
-    baseControl: IPageControl,
-    customControl: IPageControl
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IPageControl,
+    customObject: IPageControl
+  ): IPageControlChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IPageControlChange = {
       element: ElementName,
-      id: baseControl.id,
+      id: baseObject.id,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseControl) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'id':
         case 'indentation':
         case 'type':
-          if (baseControl[key] !== customControl[key]) {
-            changes.push({
-              element: 'Property',
-              name: 'dataType',
-              base: baseControl[key],
-              custom: customControl[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseControl[key] || [],
-            customControl[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

@@ -14,7 +14,7 @@ import LineByLine from 'n-readlines';
 
 export interface IAppObject {
   type: string;
-  id: string;
+  id: number;
   name: string;
   [name: string]: any;
 }
@@ -180,6 +180,6 @@ export default class ObjectReader {
     match = OBJECT_HEADER_EXPR.exec(header);
     if (!match) throw new Error(`Invalid object header '${header}'`);
 
-    return { type: match[1], id: match[2], name: match[3] };
+    return { type: match[1], id: Number(match[2]), name: match[3] };
   }
 }

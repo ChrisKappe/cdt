@@ -1,4 +1,9 @@
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ITableViewChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 import ITableView from 'cal-to-json/models/table-view';
 
@@ -6,57 +11,54 @@ const ElementName = 'TableView';
 
 export class CompareTableView {
   static compare(
-    property: string,
-    baseTableView: ITableView,
-    customTableView: ITableView
-  ) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    propertyName: string,
+    baseObject: ITableView,
+    customObject: ITableView
+  ): ITableViewChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ITableViewChange = {
       element: ElementName,
-      name: property,
+      propertyName: propertyName,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseTableView) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'key':
-          const baseKey = baseTableView.key?.join(','),
-            customKey = customTableView.key?.join(',');
-          if (baseKey !== customKey) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseKey,
-              custom: customKey,
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject.key?.join(','),
+            customObject.key?.join(',')
+          );
           break;
         case 'order':
-          if (baseTableView[key] !== customTableView[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseTableView[key],
-              custom: customTableView[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'tableFilter':
-          const tableFiltersChange = CompareFilterConditions.compareCollection(
-            baseTableView.tableFilter || [],
-            customTableView.tableFilter || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareFilterConditions.compareCollection(
+              member,
+              baseObject.tableFilter || [],
+              customObject.tableFilter || []
+            )
           );
-          if (tableFiltersChange.change !== ChangeType.NONE)
-            changes.push(tableFiltersChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

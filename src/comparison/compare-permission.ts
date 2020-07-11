@@ -1,19 +1,25 @@
 import IPermission from 'cal-to-json/models/permission';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IPermissionChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 
 const ElementCollectionName = 'Permissions';
 const ElementName = 'Permission';
 
 export class ComparePermissions {
   static compareCollection(
-    property: string,
+    propertyName: string,
     basePermissions: Array<IPermission>,
     customPermissions: Array<IPermission>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IPermissionChange> {
+    const changes: Array<IPermissionChange> = [];
+    const change: ICollectionChange<IPermissionChange> = {
       element: ElementCollectionName,
-      name: property,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -38,8 +44,11 @@ export class ComparePermissions {
       } else {
         changes.push({
           element: ElementName,
+          propertyName: propertyName,
           objectId: basePermission.objectId,
           objectType: basePermission.objectType,
+          base: basePermission,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -55,8 +64,11 @@ export class ComparePermissions {
       if (!permissionFound) {
         changes.push({
           element: ElementName,
+          propertyName: propertyName,
           objectId: customPermission.objectId,
           objectType: customPermission.objectType,
+          base: null,
+          custom: customPermission,
           change: ChangeType.ADD,
         });
       }
@@ -68,21 +80,23 @@ export class ComparePermissions {
 
   static compare(
     propertyName: string,
-    basePermission: IPermission,
-    customPermission: IPermission
-  ) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IPermission,
+    customObject: IPermission
+  ): IPermissionChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IPermissionChange = {
       element: ElementName,
-      name: propertyName,
-      objectId: basePermission.objectId,
-      objectType: basePermission.objectType,
+      propertyName: propertyName,
+      objectId: baseObject.objectId,
+      objectType: baseObject.objectType,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in basePermission) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
@@ -93,18 +107,15 @@ export class ComparePermissions {
         case 'modify':
         case 'delete2':
         case 'execute':
-          if (basePermission[key] !== customPermission[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: basePermission[key],
-              custom: customPermission[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

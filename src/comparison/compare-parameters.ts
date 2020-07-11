@@ -1,5 +1,11 @@
 import { IParameter } from 'cal-to-json/models/parameter';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IParameterChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareVariables } from './compare-variables';
 
 const ElementCollectionName = 'Parameters';
@@ -7,12 +13,14 @@ const ElementName = 'Parameter';
 
 export class CompareParameters {
   static compareCollection(
+    propertyName: string,
     baseParameters: Array<IParameter>,
     customParameters: Array<IParameter>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IParameterChange> {
+    const changes: Array<IParameterChange> = [];
+    const change: ICollectionChange<IParameterChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -33,6 +41,8 @@ export class CompareParameters {
           element: ElementName,
           id: baseParameter.variable.id,
           name: baseParameter.variable.name,
+          base: baseParameter,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -48,6 +58,8 @@ export class CompareParameters {
           element: ElementName,
           id: customParameter.variable.id,
           name: customParameter.variable.name,
+          base: null,
+          custom: customParameter,
           change: ChangeType.ADD,
         });
       }
@@ -57,31 +69,33 @@ export class CompareParameters {
     return change;
   }
 
-  static compare(baseParameter: IParameter, customParameter: IParameter) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(
+    baseParameter: IParameter,
+    customParameter: IParameter
+  ): IParameterChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IParameterChange = {
       element: ElementName,
       id: baseParameter.variable.id,
       name: baseParameter.variable.name,
+      base: baseParameter,
+      custom: customParameter,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    if (baseParameter.byReference !== customParameter.byReference) {
-      changes.push({
-        element: 'Property',
-        name: 'byReference',
-        base: baseParameter.byReference,
-        custom: customParameter.byReference,
-        change: ChangeType.MODIFY,
-      });
-    }
-
-    const variableChange = CompareVariables.compare(
-      baseParameter.variable,
-      customParameter.variable
+    MemberChange.AddChange(
+      changes,
+      'ByReference',
+      baseParameter.byReference,
+      customParameter.byReference
     );
-    if (variableChange.change !== ChangeType.NONE) changes.push(variableChange);
+
+    MemberChange.AddChangeObject(
+      changes,
+      'Variable',
+      CompareVariables.compare(baseParameter.variable, customParameter.variable)
+    );
 
     if (changes.length > 0) change.change = ChangeType.MODIFY;
     return change;

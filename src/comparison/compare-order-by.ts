@@ -1,18 +1,20 @@
-import { IChange, ChangeType } from './change.model';
+import { ChangeType, IOrderByChange } from './change.model';
 import { IOrderBy } from 'cal-to-json/cal/order-by-reader';
 
 const ElementName = 'OrderBy';
 
 export class CompareOrderBy {
   static compare(
+    propertyName: string,
     baseItems: Array<IOrderBy>,
     customItems: Array<IOrderBy>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): IOrderByChange {
+    const change: IOrderByChange = {
       element: ElementName,
+      propertyName: propertyName,
+      base: baseItems,
+      custom: customItems,
       change: ChangeType.NONE,
-      changes: changes,
     };
 
     let base = this.orderByToString(baseItems);
@@ -20,9 +22,10 @@ export class CompareOrderBy {
     if (base !== custom) {
       return {
         element: ElementName,
-        change: ChangeType.MODIFY,
+        propertyName: propertyName,
         base: baseItems,
         custom: customItems,
+        change: ChangeType.MODIFY,
       };
     }
 

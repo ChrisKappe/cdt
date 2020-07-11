@@ -1,6 +1,11 @@
 import { CompareVariables } from './compare-variables';
 import { ITrigger } from 'cal-to-json/cal/trigger-reader';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ITriggerChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 
 const ElementName = 'Trigger';
 
@@ -9,30 +14,33 @@ export class CompareTrigger {
     triggerName: string,
     baseTrigger: ITrigger,
     customTrigger: ITrigger
-  ) {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ITriggerChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ITriggerChange = {
       element: ElementName,
-      name: triggerName,
+      propertyName: triggerName,
+      base: baseTrigger,
+      custom: customTrigger,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    const varChange = CompareVariables.compareCollection(
-      baseTrigger.variables || [],
-      customTrigger.variables || []
+    MemberChange.AddChangeObject(
+      changes,
+      'Variables',
+      CompareVariables.compareCollection(
+        'Variables',
+        baseTrigger.variables || [],
+        customTrigger.variables || []
+      )
     );
-    if (varChange.change !== ChangeType.NONE) changes.push(varChange);
 
-    if (baseTrigger.body !== customTrigger.body) {
-      changes.push({
-        element: 'Property',
-        name: 'body',
-        base: baseTrigger.body,
-        custom: customTrigger.body,
-        change: ChangeType.MODIFY,
-      });
-    }
+    MemberChange.AddChange(
+      changes,
+      'Code',
+      baseTrigger.body,
+      customTrigger.body
+    );
 
     return change;
   }

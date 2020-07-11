@@ -10,8 +10,10 @@ export default class Main {
   static start() {
     let baseObjectFileName = path.resolve('src/res/BaseObjects.txt');
     let customObjectFileName = path.resolve('src/res/CustomObjects.txt');
+
     const baseObjects = ObjectReader.readObjects(baseObjectFileName);
     const customObjects = ObjectReader.readObjects(customObjectFileName);
+
     console.log('Compare Objects:');
     const changes = CompareAppObjects.compareCollection(
       baseObjects,
@@ -34,4 +36,4 @@ export default class Main {
   }
 }
 
-Main.generateReport();
+Main.start();

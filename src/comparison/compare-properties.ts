@@ -1,5 +1,10 @@
 import { IProperty } from 'cal-to-json/cal/property-map';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IPropertyChange,
+  ICollectionChange,
+  IChange,
+} from './change.model';
 import { CompareTrigger } from './compare-trigger';
 import { CompareTextML } from './compare-text-ml';
 import { CompareTableRelation } from './compare-table-relation';
@@ -11,17 +16,19 @@ import { CompareTableView } from './compare-table-view';
 import { CompareOrderBy } from './compare-order-by';
 import { CompareDataItemLinks } from './compare-data-item-link';
 
+const ElementCollectionName = 'Properties';
 const ElementName = 'Property';
 
 export class CompareProperties {
   static compareCollection(
-    collectionName: string,
+    propertyName: string,
     baseProperties: Array<IProperty>,
     customProperties: Array<IProperty>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
-      element: collectionName,
+  ): ICollectionChange<IPropertyChange> {
+    const changes: Array<IPropertyChange> = [];
+    const change: ICollectionChange<IPropertyChange> = {
+      element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -40,7 +47,9 @@ export class CompareProperties {
       } else {
         changes.push({
           element: ElementName,
-          name: baseProperty.name,
+          propertyName: baseProperty.name,
+          base: baseProperty,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -54,7 +63,9 @@ export class CompareProperties {
       if (!propertyFound) {
         changes.push({
           element: ElementName,
-          name: customProperty.name,
+          propertyName: customProperty.name,
+          base: null,
+          custom: customProperty,
           change: ChangeType.ADD,
         });
       }
@@ -64,92 +75,149 @@ export class CompareProperties {
     return change;
   }
 
-  static compare(baseProperty: IProperty, customProperty: IProperty): IChange {
-    const change: IChange = {
+  static compare(
+    baseObject: IProperty,
+    customObject: IProperty
+  ): IPropertyChange {
+    const change: IPropertyChange = {
       element: ElementName,
-      name: baseProperty.name,
+      propertyName: baseObject.name,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
     };
 
-    switch (baseProperty.type) {
+    switch (baseObject.type) {
       case 'TEXT':
       case 'FIELD_LIST':
       case 'BOOLEAN':
       case 'INTEGER':
       case 'OPTION':
-        if (baseProperty.value !== customProperty.value) {
+        if (baseObject.value !== customObject.value) {
           return {
             element: ElementName,
-            name: baseProperty.name,
-            base: baseProperty.value,
-            custom: customProperty.value,
+            propertyName: baseObject.name,
+            base: baseObject.value,
+            custom: customObject.value,
             change: ChangeType.MODIFY,
           };
         }
         break;
       case 'TRIGGER':
-        return CompareTrigger.compare(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareTrigger.compare(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'TEXT_ML':
-        return CompareTextML.compareCollection(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareTextML.compareCollection(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'TABLE_RELATION':
-        return CompareTableRelation.compare(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareTableRelation.compare(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'CALC_FORMULA':
-        return CompareCalcFormula.compare(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareCalcFormula.compare(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'PERMISSION':
-        return ComparePermissions.compare(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          ComparePermissions.compare(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'PERMISSIONS':
-        return ComparePermissions.compareCollection(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          ComparePermissions.compareCollection(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'ACTION_LIST':
-        return ComparePageActions.compareCollection(
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          ComparePageActions.compareCollection(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'TABLE_FILTER':
-        return CompareFilterConditions.compareCollection(
-          baseProperty.value || [],
-          customProperty.value || []
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareFilterConditions.compareCollection(
+            baseObject.name,
+            baseObject.value || [],
+            customObject.value || []
+          )
         );
       case 'DATA_ITEM_LINK':
-        return CompareDataItemLinks.compareCollection(
-          baseProperty.value || [],
-          customProperty.value || []
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareDataItemLinks.compareCollection(
+            baseObject.name,
+            baseObject.value || [],
+            customObject.value || []
+          )
         );
       case 'TABLE_VIEW':
-        return CompareTableView.compare(
-          baseProperty.name,
-          baseProperty.value,
-          customProperty.value
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareTableView.compare(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
         );
       case 'ORDERBY':
-        return CompareOrderBy.compare(baseProperty.value, customProperty.value);
+        return this.GetPropertyChange(
+          baseObject.name,
+          CompareOrderBy.compare(
+            baseObject.name,
+            baseObject.value,
+            customObject.value
+          )
+        );
       default:
-        throw new Error(`${baseProperty.type} not implemented`);
+        throw new Error(`${baseObject.type} not implemented`);
     }
 
     return change;
+  }
+
+  private static GetPropertyChange(
+    propertyName: string,
+    change: IChange
+  ): IPropertyChange {
+    return {
+      element: ElementName,
+      propertyName: propertyName,
+      innerChange: change,
+      change: change.change,
+    };
   }
 }

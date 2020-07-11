@@ -1,5 +1,10 @@
 import { IAppObject } from 'cal-to-json/cal/object-reader';
-import { IChange, ChangeType } from './change.model';
+import {
+  IAppObjectChange,
+  ChangeType,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareProperties } from './compare-properties';
 import { CompareTableFields } from './compare-table-fields';
 import { CompareTableKeys } from './compare-table-keys';
@@ -19,8 +24,8 @@ export class CompareAppObjects {
   static compareCollection(
     baseObjects: Array<IAppObject>,
     customObjects: Array<IAppObject>
-  ): Array<IChange> {
-    const changes: Array<IChange> = [];
+  ): Array<IAppObjectChange> {
+    const changes: Array<IAppObjectChange> = [];
     const comparedObjects: Array<IAppObject> = [];
 
     baseObjects.forEach(baseObject => {
@@ -35,9 +40,11 @@ export class CompareAppObjects {
       } else {
         changes.push({
           element: ElementName,
-          id: baseObject.id,
-          type: baseObject.type,
-          name: baseObject.name,
+          objectId: baseObject.id,
+          objectType: baseObject.type,
+          objectName: baseObject.name,
+          base: baseObject,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -51,9 +58,11 @@ export class CompareAppObjects {
       if (!objectFound) {
         changes.push({
           element: ElementName,
-          id: customObject.id,
-          type: customObject.type,
-          name: customObject.name,
+          objectId: customObject.id,
+          objectType: customObject.type,
+          objectName: customObject.name,
+          base: null,
+          custom: customObject,
           change: ChangeType.ADD,
         });
       }
@@ -62,158 +71,176 @@ export class CompareAppObjects {
     return changes;
   }
 
-  static compare(baseObject: IAppObject, customObject: IAppObject): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(
+    baseObject: IAppObject,
+    customObject: IAppObject
+  ): IAppObjectChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IAppObjectChange = {
       element: ElementName,
-      id: baseObject.id,
-      type: baseObject.type,
-      name: baseObject.name,
+      objectId: baseObject.id,
+      objectType: baseObject.type,
+      objectName: baseObject.name,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
     if (baseObject.type === 'MenuSuite') return change;
 
-    for (const key in baseObject) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'type':
         case 'id':
         case 'name':
-          if (baseObject[key] !== customObject[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseObject[key],
-              custom: customObject[key],
-              change: ChangeType.MODIFY,
-            });
-          }
-          break;
         case 'RDLDATA':
-          if (baseObject[key] !== customObject[key]) {
-            changes.push({
-              element: 'RDLDATA',
-              base: baseObject[key],
-              custom: customObject[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'WORDLAYOUT':
-          const baseWordLayout = baseObject[key].join('\n'),
-            customWordLayout = customObject[key].join('\n');
-          if (baseWordLayout !== customWordLayout) {
-            changes.push({
-              element: 'WordLayout',
-              base: baseWordLayout,
-              custom: customWordLayout,
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member].join('\n'),
+            customObject[member].join('\n')
+          );
           break;
         case 'OBJECT-PROPERTIES':
         case 'PROPERTIES':
-          const propsChange = CompareProperties.compareCollection(
-            key,
-            baseObject[key],
-            customObject[key]
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member],
+              customObject[member]
+            )
           );
-          if (propsChange.change !== ChangeType.NONE) changes.push(propsChange);
           break;
         case 'FIELDS':
-          const fieldsChange = CompareTableFields.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareTableFields.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (fieldsChange.change !== ChangeType.NONE)
-            changes.push(fieldsChange);
           break;
         case 'KEYS':
-          const keysChange = CompareTableKeys.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareTableKeys.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (keysChange.change !== ChangeType.NONE) changes.push(keysChange);
           break;
         case 'FIELDGROUPS':
-          const fieldGroupChange = CompareFieldGroups.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareFieldGroups.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (fieldGroupChange.change !== ChangeType.NONE)
-            changes.push(fieldGroupChange);
           break;
         case 'CONTROLS':
-          const pageControlsChange = ComparePageControls.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            ComparePageControls.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (pageControlsChange.change !== ChangeType.NONE)
-            changes.push(pageControlsChange);
           break;
         case 'DATASET':
-          const dataItemsChange = CompareReportDataItems.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareReportDataItems.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (dataItemsChange.change !== ChangeType.NONE)
-            changes.push(dataItemsChange);
           break;
         case 'REQUESTPAGE':
-          const requestChange = CompareRequestPage.compare(
-            baseObject[key],
-            customObject[key]
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareRequestPage.compare(baseObject[member], customObject[member])
           );
-          if (requestChange.change !== ChangeType.NONE)
-            changes.push(requestChange);
           break;
         case 'CODE':
-          const codeChange = CompareCode.compare(
-            baseObject[key],
-            customObject[key]
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareCode.compare(baseObject[member], customObject[member])
           );
-
-          if (codeChange.change !== ChangeType.NONE) changes.push(codeChange);
           break;
         case 'LABELS':
-          const labelsChange = CompareReportLabels.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareReportLabels.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (labelsChange.change !== ChangeType.NONE)
-            changes.push(labelsChange);
           break;
         case 'ELEMENTS':
           if (baseObject.type === 'XMLport') {
-            const elementsChange = CompareXMLportElements.compareCollection(
-              baseObject[key] || [],
-              customObject[key] || []
+            MemberChange.AddChangeObject(
+              changes,
+              member,
+              CompareXMLportElements.compareCollection(
+                member,
+                baseObject[member] || [],
+                customObject[member] || []
+              )
             );
-            if (elementsChange.change !== ChangeType.NONE)
-              changes.push(elementsChange);
             break;
           } else if (baseObject.type === 'Query') {
-            const elementsChange = CompareQueryElements.compareCollection(
-              baseObject[key] || [],
-              customObject[key] || []
+            MemberChange.AddChangeObject(
+              changes,
+              member,
+              CompareQueryElements.compareCollection(
+                member,
+                baseObject[member] || [],
+                customObject[member] || []
+              )
             );
-            if (elementsChange.change !== ChangeType.NONE)
-              changes.push(elementsChange);
             break;
           } else {
-            throw new Error(`${key} not implemented`);
+            throw new Error(`${member} not implemented`);
           }
         case 'EVENTS':
-          const eventsChange = CompareXMLportEvents.compareCollection(
-            baseObject[key] || [],
-            customObject[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareXMLportEvents.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (eventsChange.change !== ChangeType.NONE)
-            changes.push(eventsChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

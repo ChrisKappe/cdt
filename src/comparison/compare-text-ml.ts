@@ -1,19 +1,19 @@
 import ILangText from 'cal-to-json/models/lang-text';
-import { IChange, ChangeType } from './change.model';
+import { ChangeType, ILangTextChange, ICollectionChange } from './change.model';
 
 const ElementCollectionName = 'TextML';
 const ElementName = 'Text';
 
 export class CompareTextML {
   static compareCollection(
-    property: string,
+    propertyName: string,
     baseTextML: Array<ILangText>,
     customTextML: Array<ILangText>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<ILangTextChange> {
+    const changes: Array<ILangTextChange> = [];
+    const change: ICollectionChange<ILangTextChange> = {
       element: ElementCollectionName,
-      name: property,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -58,17 +58,19 @@ export class CompareTextML {
     return change;
   }
 
-  static compare(baseVariable: ILangText, customVariable: ILangText): IChange {
-    const change: IChange = {
+  static compare(base: ILangText, custom: ILangText): ILangTextChange {
+    const change: ILangTextChange = {
       element: ElementName,
+      lang: base.lang,
+      text: base.text,
       change: ChangeType.NONE,
     };
 
-    if (baseVariable.text !== customVariable.text) {
+    if (base.text !== custom.text) {
       return {
         element: ElementName,
-        base: baseVariable.text,
-        custom: customVariable.text,
+        lang: base.text,
+        text: custom.text,
         change: ChangeType.MODIFY,
       };
     }

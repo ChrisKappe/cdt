@@ -1,17 +1,25 @@
 import IFilterCondition from 'cal-to-json/models/filter-condition';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  IFilterConditionChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 
 const ElementCollectionName = 'FilterConditions';
 const ElementName = 'FilterCondition';
 
 export class CompareFilterConditions {
   static compareCollection(
+    propertyName: string,
     baseFilterConditions: Array<IFilterCondition>,
     customFilterConditions: Array<IFilterCondition>
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  ): ICollectionChange<IFilterConditionChange> {
+    const changes: Array<IFilterConditionChange> = [];
+    const change: ICollectionChange<IFilterConditionChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -35,6 +43,8 @@ export class CompareFilterConditions {
         changes.push({
           element: ElementName,
           field: baseFilterCondition.field,
+          base: baseFilterCondition,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -53,6 +63,8 @@ export class CompareFilterConditions {
         changes.push({
           element: ElementName,
           field: customFilterCondition.field,
+          base: null,
+          custom: customFilterCondition,
           change: ChangeType.ADD,
         });
       }
@@ -63,19 +75,21 @@ export class CompareFilterConditions {
   }
 
   static compare(
-    baseField: IFilterCondition,
-    customField: IFilterCondition
-  ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    baseObject: IFilterCondition,
+    customObject: IFilterCondition
+  ): IFilterConditionChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IFilterConditionChange = {
       element: ElementName,
-      field: baseField.field,
+      field: baseObject.field,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseField) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
@@ -84,18 +98,15 @@ export class CompareFilterConditions {
         case 'value':
         case 'filter':
         case 'upperLimit':
-          if (baseField[key] !== customField[key]) {
-            changes.push({
-              element: 'Property',
-              name: key,
-              base: baseField[key],
-              custom: customField[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

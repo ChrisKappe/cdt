@@ -1,5 +1,12 @@
 import { CompareProperties } from './compare-properties';
-import { IChange, ChangeType } from './change.model';
+import {
+  IChange,
+  ChangeType,
+  IReportLabelChange,
+  ICollectionChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import IReportLabel from 'cal-to-json/models/report-label';
 
 const ElementCollectionName = 'ReportLabels';
@@ -7,12 +14,14 @@ const ElementName = 'ReportLabel';
 
 export class CompareReportLabels {
   static compareCollection(
+    propertyName: string,
     baseLabels: Array<IReportLabel>,
     customLabels: Array<IReportLabel>
   ): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+    const changes: Array<IReportLabelChange> = [];
+    const change: ICollectionChange<IReportLabelChange> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
       changes: changes,
     };
@@ -33,6 +42,8 @@ export class CompareReportLabels {
           element: ElementName,
           id: baseLabel.id,
           name: baseLabel.name,
+          base: baseLabel,
+          custom: null,
           change: ChangeType.DELETE,
         });
       }
@@ -48,6 +59,8 @@ export class CompareReportLabels {
           element: ElementName,
           id: customLabel.id,
           name: customLabel.name,
+          base: null,
+          custom: customLabel,
           change: ChangeType.ADD,
         });
       }
@@ -57,43 +70,48 @@ export class CompareReportLabels {
     return change;
   }
 
-  static compare(baseLabel: IReportLabel, customLabel: IReportLabel): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(
+    baseObject: IReportLabel,
+    customObject: IReportLabel
+  ): IReportLabelChange {
+    const changes: Array<IMemberChange> = [];
+    const change: IReportLabelChange = {
       element: ElementName,
-      id: baseLabel.id,
-      name: baseLabel.name,
+      id: baseObject.id,
+      name: baseObject.name,
+      base: baseObject,
+      custom: customObject,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseLabel) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'className':
         case 'constructor':
           break;
         case 'id':
         case 'name':
-          if (baseLabel[key] !== customLabel[key]) {
-            changes.push({
-              element: 'Property',
-              name: 'dataType',
-              base: baseLabel[key],
-              custom: customLabel[key],
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject[member],
+            customObject[member]
+          );
           break;
         case 'properties':
-          const propChange = CompareProperties.compareCollection(
-            'properties',
-            baseLabel[key] || [],
-            customLabel[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProperties.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (propChange.change !== ChangeType.NONE) changes.push(propChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

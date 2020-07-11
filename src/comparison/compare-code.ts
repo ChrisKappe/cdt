@@ -1,48 +1,57 @@
 import { CompareProcedures } from './compare-procedures';
-import { IChange, ChangeType } from './change.model';
+import {
+  ChangeType,
+  ICodeChange,
+  IMemberChange,
+  MemberChange,
+} from './change.model';
 import { CompareVariables } from './compare-variables';
 
 const ElementName = 'Code';
 
 export class CompareCode {
-  static compare(baseCode: any, customCode: any): IChange {
-    const changes: Array<IChange> = [];
-    const change: IChange = {
+  static compare(baseObject: any, customObject: any): ICodeChange {
+    const changes: Array<IMemberChange> = [];
+    const change: ICodeChange = {
       element: ElementName,
       change: ChangeType.NONE,
       changes: changes,
     };
 
-    for (const key in baseCode) {
-      switch (key) {
+    for (const member in baseObject) {
+      switch (member) {
         case 'documentation':
-          if (baseCode.documentation !== customCode.documentation) {
-            changes.push({
-              element: 'documentation',
-              base: baseCode.documentation,
-              custom: customCode.documentation,
-              change: ChangeType.MODIFY,
-            });
-          }
+          MemberChange.AddChange(
+            changes,
+            member,
+            baseObject.documentation,
+            customObject.documentation
+          );
           break;
         case 'variables':
-          const varChange = CompareVariables.compareCollection(
-            baseCode[key] || [],
-            customCode[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareVariables.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-          if (varChange.change !== ChangeType.NONE) changes.push(varChange);
           break;
         case 'procedures':
-          const procedureChange = CompareProcedures.compareCollection(
-            baseCode[key] || [],
-            customCode[key] || []
+          MemberChange.AddChangeObject(
+            changes,
+            member,
+            CompareProcedures.compareCollection(
+              member,
+              baseObject[member] || [],
+              customObject[member] || []
+            )
           );
-
-          if (procedureChange.change !== ChangeType.NONE)
-            changes.push(procedureChange);
           break;
         default:
-          throw new Error(`${key} not implemented`);
+          throw new Error(`${member} not implemented`);
       }
     }
 

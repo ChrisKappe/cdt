@@ -1,13 +1,15 @@
-import { IChange, ChangeType } from './change.model';
+import { ChangeType, ICollectionChange } from './change.model';
 const ElementCollectionName = 'XMLportEvents';
 
 export class CompareXMLportEvents {
   static compareCollection(
+    propertyName: string,
     baseElements: Array<any>,
     customElements: Array<any>
-  ): IChange {
-    const change: IChange = {
+  ): ICollectionChange<any> {
+    const change: ICollectionChange<any> = {
       element: ElementCollectionName,
+      propertyName: propertyName,
       change: ChangeType.NONE,
     };
 
