@@ -7,8 +7,6 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementName = 'Trigger';
-
 export class CompareTrigger {
   static compare(
     triggerName: string,
@@ -17,11 +15,10 @@ export class CompareTrigger {
   ): ITriggerChange {
     const changes: Array<IMemberChange> = [];
     const change: ITriggerChange = {
-      element: ElementName,
       propertyName: triggerName,
       base: baseTrigger,
       custom: customTrigger,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 

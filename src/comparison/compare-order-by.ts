@@ -1,8 +1,6 @@
 import { ChangeType, IOrderByChange } from './change.model';
 import { IOrderBy } from 'cal-to-json/cal/order-by-reader';
 
-const ElementName = 'OrderBy';
-
 export class CompareOrderBy {
   static compare(
     propertyName: string,
@@ -10,22 +8,20 @@ export class CompareOrderBy {
     customItems: Array<IOrderBy>
   ): IOrderByChange {
     const change: IOrderByChange = {
-      element: ElementName,
       propertyName: propertyName,
       base: baseItems,
       custom: customItems,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
     };
 
     let base = this.orderByToString(baseItems);
     let custom = this.orderByToString(customItems);
     if (base !== custom) {
       return {
-        element: ElementName,
         propertyName: propertyName,
         base: baseItems,
         custom: customItems,
-        change: ChangeType.MODIFY,
+        changeType: ChangeType.MODIFY,
       };
     }
 

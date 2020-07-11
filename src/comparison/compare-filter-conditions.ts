@@ -7,9 +7,6 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementCollectionName = 'FilterConditions';
-const ElementName = 'FilterCondition';
-
 export class CompareFilterConditions {
   static compareCollection(
     propertyName: string,
@@ -18,9 +15,8 @@ export class CompareFilterConditions {
   ): ICollectionChange<IFilterConditionChange> {
     const changes: Array<IFilterConditionChange> = [];
     const change: ICollectionChange<IFilterConditionChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -38,14 +34,13 @@ export class CompareFilterConditions {
       if (customFilterCondition) {
         comparedFilterConditions.push(customFilterCondition);
         const change = this.compare(baseFilterCondition, customFilterCondition);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           field: baseFilterCondition.field,
           base: baseFilterCondition,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -61,16 +56,15 @@ export class CompareFilterConditions {
 
       if (!filterConditionFound) {
         changes.push({
-          element: ElementName,
           field: customFilterCondition.field,
           base: null,
           custom: customFilterCondition,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -80,11 +74,10 @@ export class CompareFilterConditions {
   ): IFilterConditionChange {
     const changes: Array<IMemberChange> = [];
     const change: IFilterConditionChange = {
-      element: ElementName,
       field: baseObject.field,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -110,7 +103,7 @@ export class CompareFilterConditions {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

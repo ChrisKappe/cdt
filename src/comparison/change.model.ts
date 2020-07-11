@@ -24,197 +24,18 @@ import IRequestPage from 'cal-to-json/models/request-page';
 import IReportDataItem from 'cal-to-json/models/report-data-item';
 import { IProperty } from 'cal-to-json/cal/property-map';
 
-export interface IChange {
-  element: string;
-  change: ChangeType;
-  // changes?: Array<IChange>;
-  // [key: string]: any;
-}
-
 export enum ChangeType {
-  NONE,
-  ADD,
-  MODIFY,
-  DELETE,
+  NONE = '',
+  ADD = 'Add',
+  MODIFY = 'Modify',
+  DELETE = 'Delete',
 }
 
-export interface IChangedValue<T> {
-  base: T | null;
-  custom: T | null;
+export interface IChange {
+  changeType: ChangeType;
 }
 
-export interface IAppObjectChange extends IChange, IChangedValue<IAppObject> {
-  objectId: number;
-  objectType: string;
-  objectName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IProcedureChange extends IChange, IChangedValue<IProcedure> {
-  procedureId: number;
-  procedureName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IAttributeChange extends IChange, IChangedValue<IAttribute> {
-  attributeType: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface ICalcFormulaChange
-  extends IChange,
-    IChangedValue<ICalcFormula> {
-  propertyName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IFieldGroupChange extends IChange, IChangedValue<IFieldGroup> {
-  name: string;
-  fields: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface ITableKeyChange extends IChange, IChangedValue<ITableKey> {
-  fields: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface ITableFieldChange extends IChange, IChangedValue<ITableField> {
-  fieldId: number;
-  fieldName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IFilterConditionChange
-  extends IChange,
-    IChangedValue<IFilterCondition> {
-  field: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IDataItemLinkChange
-  extends IChange,
-    IChangedValue<IDataItemLink> {
-  field: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IOrderByChange
-  extends IChange,
-    IChangedValue<Array<IOrderBy>> {
-  propertyName: string;
-}
-
-export interface ITableRelationChange
-  extends IChange,
-    IChangedValue<ITableRelation> {
-  propertyName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface ITableViewChange extends IChange, IChangedValue<ITableView> {
-  propertyName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface ITriggerChange extends IChange, IChangedValue<ITrigger> {
-  propertyName: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface ILangTextChange extends IChange {
-  lang: string;
-  text: string;
-}
-
-export interface IVariableChange extends IChange, IChangedValue<IVariable> {
-  id: number;
-  name: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IParameterChange extends IChange, IChangedValue<IParameter> {
-  id: number;
-  name: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IReturnTypeChange extends IChange, IChangedValue<IReturnType> {
-  changes?: Array<IMemberChange>;
-}
-
-export interface IXMLportElementChange
-  extends IChange,
-    IChangedValue<IXMLportElement> {
-  id: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IPageActionChange extends IChange, IChangedValue<IPageAction> {
-  id: number;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IPageControlChange
-  extends IChange,
-    IChangedValue<IPageControl> {
-  id: number;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IPermissionChange extends IChange, IChangedValue<IPermission> {
-  propertyName: string;
-  objectType: string;
-  objectId: number;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IQueryElementChange
-  extends IChange,
-    IChangedValue<IQueryElement> {
-  id: number;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IReportLabelChange
-  extends IChange,
-    IChangedValue<IReportLabel> {
-  id: number;
-  name: string;
-
-  changes?: Array<IMemberChange>;
-}
-
-export interface IRequestPageChange
-  extends IChange,
-    IChangedValue<IRequestPage> {
-  changes?: Array<IMemberChange>;
-}
-
-export interface IReportDataItemChange
-  extends IChange,
-    IChangedValue<IReportDataItem> {
-  id: number;
-
+export interface IObjectChange extends IChange {
   changes?: Array<IMemberChange>;
 }
 
@@ -223,11 +44,168 @@ export interface IUndefinedChangedValue<T> {
   custom?: T | null;
 }
 
+export interface IChangedValue<T> {
+  base: T | null;
+  custom: T | null;
+}
+
+export interface IAppObjectChange
+  extends IObjectChange,
+    IChangedValue<IAppObject> {
+  objectId: number;
+  objectType: string;
+  objectName: string;
+}
+
+export interface IProcedureChange
+  extends IObjectChange,
+    IChangedValue<IProcedure> {
+  procedureId: number;
+  procedureName: string;
+}
+
+export interface IAttributeChange
+  extends IObjectChange,
+    IChangedValue<IAttribute> {
+  attributeType: string;
+}
+
+export interface ICalcFormulaChange
+  extends IObjectChange,
+    IChangedValue<ICalcFormula> {
+  propertyName: string;
+}
+
+export interface IFieldGroupChange
+  extends IObjectChange,
+    IChangedValue<IFieldGroup> {
+  name: string;
+  fields: string;
+}
+
+export interface ITableKeyChange
+  extends IObjectChange,
+    IChangedValue<ITableKey> {
+  fields: string;
+}
+
+export interface ITableFieldChange
+  extends IObjectChange,
+    IChangedValue<ITableField> {
+  fieldId: number;
+  fieldName: string;
+}
+
+export interface IFilterConditionChange
+  extends IObjectChange,
+    IChangedValue<IFilterCondition> {
+  field: string;
+}
+
+export interface IDataItemLinkChange
+  extends IObjectChange,
+    IChangedValue<IDataItemLink> {
+  field: string;
+}
+
+export interface IOrderByChange
+  extends IObjectChange,
+    IChangedValue<Array<IOrderBy>> {
+  propertyName: string;
+}
+
+export interface ITableRelationChange
+  extends IObjectChange,
+    IChangedValue<ITableRelation> {
+  propertyName: string;
+}
+
+export interface ITableViewChange
+  extends IObjectChange,
+    IChangedValue<ITableView> {
+  propertyName: string;
+}
+
+export interface ITriggerChange extends IObjectChange, IChangedValue<ITrigger> {
+  propertyName: string;
+}
+
+export interface ILangTextChange extends IChange {
+  lang: string;
+  text: string;
+}
+
+export interface IVariableChange
+  extends IObjectChange,
+    IChangedValue<IVariable> {
+  id: number;
+  name: string;
+}
+
+export interface IParameterChange
+  extends IObjectChange,
+    IChangedValue<IParameter> {
+  id: number;
+  name: string;
+}
+
+export interface IReturnTypeChange
+  extends IObjectChange,
+    IChangedValue<IReturnType> {}
+
+export interface IXMLportElementChange
+  extends IObjectChange,
+    IChangedValue<IXMLportElement> {
+  id: string;
+}
+
+export interface IPageActionChange
+  extends IObjectChange,
+    IChangedValue<IPageAction> {
+  id: number;
+}
+
+export interface IPageControlChange
+  extends IObjectChange,
+    IChangedValue<IPageControl> {
+  id: number;
+}
+
+export interface IPermissionChange
+  extends IObjectChange,
+    IChangedValue<IPermission> {
+  propertyName: string;
+  objectType: string;
+  objectId: number;
+}
+
+export interface IQueryElementChange
+  extends IObjectChange,
+    IChangedValue<IQueryElement> {
+  id: number;
+}
+
+export interface IReportLabelChange
+  extends IObjectChange,
+    IChangedValue<IReportLabel> {
+  id: number;
+  name: string;
+}
+
+export interface IRequestPageChange
+  extends IObjectChange,
+    IChangedValue<IRequestPage> {}
+
+export interface IReportDataItemChange
+  extends IObjectChange,
+    IChangedValue<IReportDataItem> {
+  id: number;
+}
+
 export interface IPropertyChange
   extends IChange,
     IUndefinedChangedValue<IProperty> {
   propertyName: string;
-
   innerChange?: IChange;
 }
 
@@ -235,17 +213,15 @@ export interface IMemberChange extends IChange {
   memberName: string;
   base: any;
   custom: any;
-  innerChange?: IChange;
+  innerChange?: IObjectChange;
 }
 
 export interface ICollectionChange<T> extends IChange {
-  propertyName: string;
+  memberName: string;
   changes?: Array<T>;
 }
 
-export interface ICodeChange extends IChange {
-  changes?: Array<IMemberChange>;
-}
+export interface ICodeChange extends IObjectChange {}
 
 export class MemberChange {
   static AddChange(
@@ -256,19 +232,18 @@ export class MemberChange {
   ) {
     if (baseValue === customValue) return;
     const change: IMemberChange = {
-      element: 'Member',
       memberName: memberName,
       base: baseValue,
       custom: customValue,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
     };
 
     if (!baseValue && customValue) {
-      change.change = ChangeType.ADD;
+      change.changeType = ChangeType.ADD;
     } else if (baseValue && !customValue) {
-      change.change = ChangeType.DELETE;
+      change.changeType = ChangeType.DELETE;
     } else {
-      change.change = ChangeType.MODIFY;
+      change.changeType = ChangeType.MODIFY;
     }
     changes.push(change);
   }
@@ -278,14 +253,13 @@ export class MemberChange {
     memberName: string,
     change: IChange
   ) {
-    if (change.change !== ChangeType.NONE)
+    if (change.changeType !== ChangeType.NONE)
       changes.push({
-        element: 'Member',
         memberName: memberName,
         base: null,
         custom: null,
         innerChange: change,
-        change: ChangeType.MODIFY,
+        changeType: ChangeType.MODIFY,
       });
   }
 }

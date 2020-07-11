@@ -11,9 +11,6 @@ import { CompareParameters } from './compare-parameters';
 import { CompareAttributes } from './compare-attributes';
 import { CompareReturnType } from './compare-return-type';
 
-const ElementCollectionName = 'Procedures';
-const ElementName = 'Procedure';
-
 export class CompareProcedures {
   static compareCollection(
     propertyName: string,
@@ -22,9 +19,8 @@ export class CompareProcedures {
   ): ICollectionChange<IProcedureChange> {
     const changes: Array<IProcedureChange> = [];
     const change: ICollectionChange<IProcedureChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -38,16 +34,15 @@ export class CompareProcedures {
       if (customProcedure) {
         comparedProcedures.push(customProcedure);
         const procedureChange = this.compare(baseProcedure, customProcedure);
-        if (procedureChange.change !== ChangeType.NONE)
+        if (procedureChange.changeType !== ChangeType.NONE)
           changes.push(procedureChange);
       } else
         changes.push({
-          element: ElementName,
           procedureId: baseProcedure.id,
           procedureName: baseProcedure.name,
           base: baseProcedure,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
     });
 
@@ -58,17 +53,16 @@ export class CompareProcedures {
 
       if (!procedureFound) {
         changes.push({
-          element: ElementName,
           procedureId: customProcedure.id,
           procedureName: customProcedure.name,
           base: null,
           custom: customProcedure,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -78,12 +72,11 @@ export class CompareProcedures {
   ): IProcedureChange {
     const changes: Array<IMemberChange> = [];
     const change: IProcedureChange = {
-      element: ElementName,
       procedureId: base.id,
       procedureName: base.name,
       base: base,
       custom: custom,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -140,7 +133,7 @@ export class CompareProcedures {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

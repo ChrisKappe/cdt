@@ -7,9 +7,6 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementCollectionName = 'FieldGroups';
-const ElementName = 'FieldGroup';
-
 export class CompareFieldGroups {
   static compareCollection(
     propertyName: string,
@@ -18,9 +15,8 @@ export class CompareFieldGroups {
   ): ICollectionChange<IFieldGroupChange> {
     const changes: Array<IFieldGroupChange> = [];
     const change: ICollectionChange<IFieldGroupChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -34,16 +30,15 @@ export class CompareFieldGroups {
       if (customFieldGroup) {
         comparedFieldGroups.push(customFieldGroup);
         const fieldGroupChange = this.compare(baseFieldGroup, customFieldGroup);
-        if (fieldGroupChange.change !== ChangeType.NONE)
+        if (fieldGroupChange.changeType !== ChangeType.NONE)
           changes.push(fieldGroupChange);
       } else
         changes.push({
-          element: ElementName,
           name: baseFieldGroup.name,
           fields: baseFieldGroup.fields.join(', '),
           base: baseFieldGroup,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
     });
 
@@ -54,17 +49,16 @@ export class CompareFieldGroups {
 
       if (!fieldGroupFound) {
         changes.push({
-          element: ElementName,
           name: customFieldGroup.name,
           fields: customFieldGroup.fields.join(', '),
           base: null,
           custom: customFieldGroup,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -74,12 +68,11 @@ export class CompareFieldGroups {
   ): IFieldGroupChange {
     const changes: Array<IMemberChange> = [];
     const change: IFieldGroupChange = {
-      element: ElementName,
       name: baseObject.name,
       fields: baseObject.fields.join(', '),
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -110,7 +103,7 @@ export class CompareFieldGroups {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

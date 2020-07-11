@@ -9,9 +9,6 @@ import {
 } from './change.model';
 import IReportLabel from 'cal-to-json/models/report-label';
 
-const ElementCollectionName = 'ReportLabels';
-const ElementName = 'ReportLabel';
-
 export class CompareReportLabels {
   static compareCollection(
     propertyName: string,
@@ -20,9 +17,8 @@ export class CompareReportLabels {
   ): IChange {
     const changes: Array<IReportLabelChange> = [];
     const change: ICollectionChange<IReportLabelChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -36,15 +32,14 @@ export class CompareReportLabels {
       if (customLabel) {
         comparedLabels.push(customLabel);
         const change = this.compare(baseLabel, customLabel);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseLabel.id,
           name: baseLabel.name,
           base: baseLabel,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -56,17 +51,16 @@ export class CompareReportLabels {
 
       if (!labelFound) {
         changes.push({
-          element: ElementName,
           id: customLabel.id,
           name: customLabel.name,
           base: null,
           custom: customLabel,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -76,12 +70,11 @@ export class CompareReportLabels {
   ): IReportLabelChange {
     const changes: Array<IMemberChange> = [];
     const change: IReportLabelChange = {
-      element: ElementName,
       id: baseObject.id,
       name: baseObject.name,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -115,7 +108,7 @@ export class CompareReportLabels {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

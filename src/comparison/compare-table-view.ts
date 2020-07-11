@@ -7,8 +7,6 @@ import {
 import { CompareFilterConditions } from './compare-filter-conditions';
 import ITableView from 'cal-to-json/models/table-view';
 
-const ElementName = 'TableView';
-
 export class CompareTableView {
   static compare(
     propertyName: string,
@@ -17,11 +15,10 @@ export class CompareTableView {
   ): ITableViewChange {
     const changes: Array<IMemberChange> = [];
     const change: ITableViewChange = {
-      element: ElementName,
       propertyName: propertyName,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -62,7 +59,7 @@ export class CompareTableView {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

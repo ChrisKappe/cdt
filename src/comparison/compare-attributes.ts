@@ -7,9 +7,6 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementCollectionName = 'Attributes';
-const ElementName = 'Attribute';
-
 export class CompareAttributes {
   static compareCollection(
     propertyName: string,
@@ -18,9 +15,8 @@ export class CompareAttributes {
   ): ICollectionChange<IAttributeChange> {
     const changes: Array<IAttributeChange> = [];
     const change: ICollectionChange<IAttributeChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -34,14 +30,13 @@ export class CompareAttributes {
       if (customAttribute) {
         comparedAttributes.push(customAttribute);
         const change = this.compare(baseAttribute, customAttribute);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           attributeType: baseAttribute.type,
           base: baseAttribute,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -53,16 +48,15 @@ export class CompareAttributes {
 
       if (!attributeFound) {
         changes.push({
-          element: ElementName,
           attributeType: customAttribute.type,
           base: null,
           custom: customAttribute,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -72,11 +66,10 @@ export class CompareAttributes {
   ): IAttributeChange {
     const changes: Array<IMemberChange> = [];
     const change: IAttributeChange = {
-      element: ElementName,
       attributeType: baseObject.type,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -106,7 +99,7 @@ export class CompareAttributes {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

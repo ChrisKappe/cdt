@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import IReportDataItem from 'cal-to-json/models/report-data-item';
 
-const ElementCollectionName = 'ReportDataItems';
-const ElementName = 'ReportDataItem';
-
 export class CompareReportDataItems {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class CompareReportDataItems {
   ): ICollectionChange<IReportDataItemChange> {
     const changes: Array<IReportDataItemChange> = [];
     const change: ICollectionChange<IReportDataItemChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -35,14 +31,13 @@ export class CompareReportDataItems {
       if (customDataItem) {
         comparedDataItems.push(customDataItem);
         const change = this.compare(baseDataItem, customDataItem);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseDataItem.id,
           base: baseDataItem,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -54,16 +49,15 @@ export class CompareReportDataItems {
 
       if (!dataItemFound) {
         changes.push({
-          element: ElementName,
           id: customDataItem.id,
           base: null,
           custom: customDataItem,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -73,11 +67,10 @@ export class CompareReportDataItems {
   ): IReportDataItemChange {
     const changes: Array<IMemberChange> = [];
     const change: IReportDataItemChange = {
-      element: ElementName,
       id: baseObject.id,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -113,7 +106,7 @@ export class CompareReportDataItems {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

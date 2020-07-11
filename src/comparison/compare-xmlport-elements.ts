@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import { IXMLportElement } from 'cal-to-json/cal/xml-port-reader';
 
-const ElementCollectionName = 'XMLportElements';
-const ElementName = 'XMLportElement';
-
 export class CompareXMLportElements {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class CompareXMLportElements {
   ): ICollectionChange<IXMLportElementChange> {
     const changes: Array<IXMLportElementChange> = [];
     const change: ICollectionChange<IXMLportElementChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -35,14 +31,13 @@ export class CompareXMLportElements {
       if (customElement) {
         comparedElements.push(customElement);
         const change = this.compare(baseElement, customElement);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseElement.id,
           base: baseElement,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -54,16 +49,15 @@ export class CompareXMLportElements {
 
       if (!elementFound) {
         changes.push({
-          element: ElementName,
           id: customElement.id,
           base: null,
           custom: customElement,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -73,11 +67,10 @@ export class CompareXMLportElements {
   ): IXMLportElementChange {
     const changes: Array<IMemberChange> = [];
     const change: IXMLportElementChange = {
-      element: ElementName,
       id: baseObject.id,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -114,7 +107,7 @@ export class CompareXMLportElements {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

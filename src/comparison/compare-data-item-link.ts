@@ -7,9 +7,6 @@ import {
 } from './change.model';
 import { IDataItemLink } from 'cal-to-json/cal/data-item-link-reader';
 
-const ElementCollectionName = 'DataItemLinks';
-const ElementName = 'DataItemLink';
-
 export class CompareDataItemLinks {
   static compareCollection(
     propertyName: string,
@@ -18,9 +15,8 @@ export class CompareDataItemLinks {
   ): ICollectionChange<IDataItemLinkChange> {
     const changes: Array<IDataItemLinkChange> = [];
     const change: ICollectionChange<IDataItemLinkChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -34,14 +30,13 @@ export class CompareDataItemLinks {
       if (customDataItemLink) {
         comparedDataItemLinks.push(customDataItemLink);
         const change = this.compare(baseDataItemLink, customDataItemLink);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           field: baseDataItemLink.field,
           base: baseDataItemLink,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -53,16 +48,15 @@ export class CompareDataItemLinks {
 
       if (!dataItemLinkFound) {
         changes.push({
-          element: ElementName,
           field: customDataItemLink.field,
           base: null,
           custom: customDataItemLink,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -72,11 +66,10 @@ export class CompareDataItemLinks {
   ): IDataItemLinkChange {
     const changes: Array<IMemberChange> = [];
     const change: IDataItemLinkChange = {
-      element: ElementName,
       field: baseObject.field,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -100,7 +93,7 @@ export class CompareDataItemLinks {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

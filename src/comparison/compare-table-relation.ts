@@ -7,8 +7,6 @@ import {
 } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
-const ElementName = 'TableRelation';
-
 export class CompareTableRelation {
   static compare(
     propertyName: string,
@@ -17,11 +15,10 @@ export class CompareTableRelation {
   ): ITableRelationChange {
     const changes: Array<IMemberChange> = [];
     const change: ITableRelationChange = {
-      element: ElementName,
       propertyName: propertyName,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -86,7 +83,7 @@ export class CompareTableRelation {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

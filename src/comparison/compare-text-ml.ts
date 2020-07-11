@@ -1,9 +1,6 @@
 import ILangText from 'cal-to-json/models/lang-text';
 import { ChangeType, ILangTextChange, ICollectionChange } from './change.model';
 
-const ElementCollectionName = 'TextML';
-const ElementName = 'Text';
-
 export class CompareTextML {
   static compareCollection(
     propertyName: string,
@@ -12,9 +9,8 @@ export class CompareTextML {
   ): ICollectionChange<ILangTextChange> {
     const changes: Array<ILangTextChange> = [];
     const change: ICollectionChange<ILangTextChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -28,13 +24,12 @@ export class CompareTextML {
       if (customLangText) {
         comparedLangTexts.push(customLangText);
         const change2 = this.compare(baseLangText, customLangText);
-        if (change.change !== ChangeType.NONE) changes.push(change2);
+        if (change.changeType !== ChangeType.NONE) changes.push(change2);
       } else {
         changes.push({
-          element: ElementName,
           lang: baseLangText.lang,
           text: baseLangText.text,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -46,32 +41,29 @@ export class CompareTextML {
 
       if (!langTextFound) {
         changes.push({
-          element: ElementName,
           lang: customLangText.lang,
           text: customLangText.text,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
   static compare(base: ILangText, custom: ILangText): ILangTextChange {
     const change: ILangTextChange = {
-      element: ElementName,
       lang: base.lang,
       text: base.text,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
     };
 
     if (base.text !== custom.text) {
       return {
-        element: ElementName,
         lang: base.text,
         text: custom.text,
-        change: ChangeType.MODIFY,
+        changeType: ChangeType.MODIFY,
       };
     }
 

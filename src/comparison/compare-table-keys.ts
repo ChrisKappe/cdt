@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import { CompareProperties } from './compare-properties';
 
-const ElementCollectionName = 'TableKeys';
-const ElementName = 'TableKey';
-
 export class CompareTableKeys {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class CompareTableKeys {
   ): ICollectionChange<ITableKeyChange> {
     const changes: Array<ITableKeyChange> = [];
     const change: ICollectionChange<ITableKeyChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -36,14 +32,13 @@ export class CompareTableKeys {
         comparedKeys.push(customKey);
 
         const keyChange = this.compare(baseKey, customKey);
-        if (keyChange.change !== ChangeType.NONE) changes.push(keyChange);
+        if (keyChange.changeType !== ChangeType.NONE) changes.push(keyChange);
       } else
         changes.push({
-          element: ElementName,
           fields: baseKey.fields.join(','),
           base: baseKey,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
     });
 
@@ -54,27 +49,25 @@ export class CompareTableKeys {
 
       if (!keyFound) {
         changes.push({
-          element: ElementName,
           fields: customKey.fields.join(', '),
           base: null,
           custom: customKey,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
   static compare(baseKey: ITableKey, customKey: ITableKey): ITableKeyChange {
     const changes: Array<IMemberChange> = [];
     const change: ITableKeyChange = {
-      element: ElementName,
       fields: baseKey.fields.join(', '),
       base: baseKey,
       custom: customKey,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -115,7 +108,7 @@ export class CompareTableKeys {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

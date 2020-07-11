@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import IPageControl from 'cal-to-json/models/page-control';
 
-const ElementCollectionName = 'PageControls';
-const ElementName = 'PageControl';
-
 export class ComparePageControls {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class ComparePageControls {
   ): ICollectionChange<IPageControlChange> {
     const changes: Array<IPageControlChange> = [];
     const change: ICollectionChange<IPageControlChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -35,14 +31,13 @@ export class ComparePageControls {
       if (customControl) {
         comparedControls.push(customControl);
         const change = this.compare(baseControl, customControl);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseControl.id,
           base: baseControl,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -54,16 +49,15 @@ export class ComparePageControls {
 
       if (!controlFound) {
         changes.push({
-          element: ElementName,
           id: customControl.id,
           base: null,
           custom: customControl,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -73,11 +67,10 @@ export class ComparePageControls {
   ): IPageControlChange {
     const changes: Array<IMemberChange> = [];
     const change: IPageControlChange = {
-      element: ElementName,
       id: baseObject.id,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -112,7 +105,7 @@ export class ComparePageControls {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

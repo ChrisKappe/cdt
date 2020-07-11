@@ -16,9 +16,6 @@ import { CompareTableView } from './compare-table-view';
 import { CompareOrderBy } from './compare-order-by';
 import { CompareDataItemLinks } from './compare-data-item-link';
 
-const ElementCollectionName = 'Properties';
-const ElementName = 'Property';
-
 export class CompareProperties {
   static compareCollection(
     propertyName: string,
@@ -27,9 +24,8 @@ export class CompareProperties {
   ): ICollectionChange<IPropertyChange> {
     const changes: Array<IPropertyChange> = [];
     const change: ICollectionChange<IPropertyChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -43,14 +39,13 @@ export class CompareProperties {
       if (customProperty) {
         comparedProperties.push(customProperty);
         const change = this.compare(baseProperty, customProperty);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           propertyName: baseProperty.name,
           base: baseProperty,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -62,16 +57,15 @@ export class CompareProperties {
 
       if (!propertyFound) {
         changes.push({
-          element: ElementName,
           propertyName: customProperty.name,
           base: null,
           custom: customProperty,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -80,11 +74,10 @@ export class CompareProperties {
     customObject: IProperty
   ): IPropertyChange {
     const change: IPropertyChange = {
-      element: ElementName,
       propertyName: baseObject.name,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
     };
 
     switch (baseObject.type) {
@@ -95,11 +88,10 @@ export class CompareProperties {
       case 'OPTION':
         if (baseObject.value !== customObject.value) {
           return {
-            element: ElementName,
             propertyName: baseObject.name,
             base: baseObject.value,
             custom: customObject.value,
-            change: ChangeType.MODIFY,
+            changeType: ChangeType.MODIFY,
           };
         }
         break;
@@ -214,10 +206,9 @@ export class CompareProperties {
     change: IChange
   ): IPropertyChange {
     return {
-      element: ElementName,
       propertyName: propertyName,
       innerChange: change,
-      change: change.change,
+      changeType: change.changeType,
     };
   }
 }

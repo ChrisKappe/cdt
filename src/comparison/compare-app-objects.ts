@@ -18,8 +18,6 @@ import { CompareXMLportElements } from './compare-xmlport-elements';
 import { CompareXMLportEvents } from './compare-xmlport-events';
 import { CompareQueryElements } from './compare-query-elements';
 
-const ElementName = 'ApplicationObject';
-
 export class CompareAppObjects {
   static compareCollection(
     baseObjects: Array<IAppObject>,
@@ -29,6 +27,9 @@ export class CompareAppObjects {
     const comparedObjects: Array<IAppObject> = [];
 
     baseObjects.forEach(baseObject => {
+      console.log(
+        `Comparing: ${baseObject.type} ${baseObject.id} ${baseObject.name}`
+      );
       let customObject = customObjects.find(
         item => item.id === baseObject.id && item.type === baseObject.type
       );
@@ -36,16 +37,15 @@ export class CompareAppObjects {
       if (customObject) {
         comparedObjects.push(customObject);
         const change = this.compare(baseObject, customObject);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           objectId: baseObject.id,
           objectType: baseObject.type,
           objectName: baseObject.name,
           base: baseObject,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -57,13 +57,12 @@ export class CompareAppObjects {
 
       if (!objectFound) {
         changes.push({
-          element: ElementName,
           objectId: customObject.id,
           objectType: customObject.type,
           objectName: customObject.name,
           base: null,
           custom: customObject,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
@@ -77,13 +76,12 @@ export class CompareAppObjects {
   ): IAppObjectChange {
     const changes: Array<IMemberChange> = [];
     const change: IAppObjectChange = {
-      element: ElementName,
       objectId: baseObject.id,
       objectType: baseObject.type,
       objectName: baseObject.name,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -244,7 +242,7 @@ export class CompareAppObjects {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

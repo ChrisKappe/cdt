@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import { IPageAction } from 'cal-to-json/models/page-action';
 
-const ElementCollectionName = 'PageActions';
-const ElementName = 'PageAction';
-
 export class ComparePageActions {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class ComparePageActions {
   ): ICollectionChange<IPageActionChange> {
     const changes: Array<IPageActionChange> = [];
     const change: ICollectionChange<IPageActionChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -33,14 +29,13 @@ export class ComparePageActions {
       if (customAction) {
         comparedActions.push(customAction);
         const change = this.compare(baseAction, customAction);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseAction.id,
           base: baseAction,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -52,16 +47,15 @@ export class ComparePageActions {
 
       if (!actionFound) {
         changes.push({
-          element: ElementName,
           id: customAction.id,
           base: null,
           custom: customAction,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -71,11 +65,10 @@ export class ComparePageActions {
   ): IPageActionChange {
     const changes: Array<IMemberChange> = [];
     const change: IPageActionChange = {
-      element: ElementName,
       id: baseObject.id,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -108,7 +101,7 @@ export class ComparePageActions {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

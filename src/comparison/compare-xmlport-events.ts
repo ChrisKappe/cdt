@@ -1,5 +1,4 @@
 import { ChangeType, ICollectionChange } from './change.model';
-const ElementCollectionName = 'XMLportEvents';
 
 export class CompareXMLportEvents {
   static compareCollection(
@@ -8,9 +7,8 @@ export class CompareXMLportEvents {
     customElements: Array<any>
   ): ICollectionChange<any> {
     const change: ICollectionChange<any> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
     };
 
     if (baseElements.length > 0 || customElements.length > 0) {

@@ -7,7 +7,6 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementCollectionName = 'Permissions';
 const ElementName = 'Permission';
 
 export class ComparePermissions {
@@ -18,9 +17,8 @@ export class ComparePermissions {
   ): ICollectionChange<IPermissionChange> {
     const changes: Array<IPermissionChange> = [];
     const change: ICollectionChange<IPermissionChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -40,16 +38,15 @@ export class ComparePermissions {
           basePermission,
           customPermission
         );
-        if (change.change !== ChangeType.NONE) changes.push(change2);
+        if (change.changeType !== ChangeType.NONE) changes.push(change2);
       } else {
         changes.push({
-          element: ElementName,
           propertyName: propertyName,
           objectId: basePermission.objectId,
           objectType: basePermission.objectType,
           base: basePermission,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -63,18 +60,17 @@ export class ComparePermissions {
 
       if (!permissionFound) {
         changes.push({
-          element: ElementName,
           propertyName: propertyName,
           objectId: customPermission.objectId,
           objectType: customPermission.objectType,
           base: null,
           custom: customPermission,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -85,13 +81,12 @@ export class ComparePermissions {
   ): IPermissionChange {
     const changes: Array<IMemberChange> = [];
     const change: IPermissionChange = {
-      element: ElementName,
       propertyName: propertyName,
       objectId: baseObject.objectId,
       objectType: baseObject.objectType,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -119,7 +114,7 @@ export class ComparePermissions {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

@@ -11,17 +11,38 @@ export default class Main {
     let baseObjectFileName = path.resolve('src/res/BaseObjects.txt');
     let customObjectFileName = path.resolve('src/res/CustomObjects.txt');
 
+    console.log('Reading Base Objects...');
     const baseObjects = ObjectReader.readObjects(baseObjectFileName);
+    console.log('Reading Custom Objects...');
     const customObjects = ObjectReader.readObjects(customObjectFileName);
 
-    console.log('Compare Objects:');
+    console.log('Comparing Objects...');
     const changes = CompareAppObjects.compareCollection(
       baseObjects,
       customObjects
     );
 
+    console.log('Saving Changes...');
     let changesFileName = path.resolve('src/res/changes.json');
-    fs.writeFileSync(changesFileName, JSON.stringify(changes, null, 2), 'utf8');
+    fs.writeFileSync(
+      changesFileName,
+      JSON.stringify(
+        changes,
+        (key, value) => {
+          if (
+            (key === 'base' || key === 'custom') &&
+            (!value || value instanceof Object)
+          ) {
+          } else {
+            return value;
+          }
+        },
+        2
+      ),
+      'utf8'
+    );
+
+    console.log('All Done!');
   }
 
   static generateReport() {

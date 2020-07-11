@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import { IQueryElement } from 'cal-to-json/cal/query-reader';
 
-const ElementCollectionName = 'QueryElements';
-const ElementName = 'QueryElement';
-
 export class CompareQueryElements {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class CompareQueryElements {
   ): ICollectionChange<IQueryElementChange> {
     const changes: Array<IQueryElementChange> = [];
     const change: ICollectionChange<IQueryElementChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -35,14 +31,13 @@ export class CompareQueryElements {
       if (customElement) {
         comparedElements.push(customElement);
         const change = this.compare(baseElement, customElement);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseElement.id,
           base: baseElement,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -54,16 +49,15 @@ export class CompareQueryElements {
 
       if (!elementFound) {
         changes.push({
-          element: ElementName,
           id: customElement.id,
           base: null,
           custom: customElement,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -73,11 +67,10 @@ export class CompareQueryElements {
   ): IQueryElementChange {
     const changes: Array<IMemberChange> = [];
     const change: IQueryElementChange = {
-      element: ElementName,
       id: baseObject.id,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -113,7 +106,7 @@ export class CompareQueryElements {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import { CompareVariables } from './compare-variables';
 
-const ElementCollectionName = 'Parameters';
-const ElementName = 'Parameter';
-
 export class CompareParameters {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class CompareParameters {
   ): ICollectionChange<IParameterChange> {
     const changes: Array<IParameterChange> = [];
     const change: ICollectionChange<IParameterChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -35,15 +31,14 @@ export class CompareParameters {
       if (customParameter) {
         comparedParameters.push(customParameter);
         const change = this.compare(baseParameter, customParameter);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseParameter.variable.id,
           name: baseParameter.variable.name,
           base: baseParameter,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -55,17 +50,16 @@ export class CompareParameters {
 
       if (!parameterFound) {
         changes.push({
-          element: ElementName,
           id: customParameter.variable.id,
           name: customParameter.variable.name,
           base: null,
           custom: customParameter,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -75,12 +69,11 @@ export class CompareParameters {
   ): IParameterChange {
     const changes: Array<IMemberChange> = [];
     const change: IParameterChange = {
-      element: ElementName,
       id: baseParameter.variable.id,
       name: baseParameter.variable.name,
       base: baseParameter,
       custom: customParameter,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -97,7 +90,7 @@ export class CompareParameters {
       CompareVariables.compare(baseParameter.variable, customParameter.variable)
     );
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

@@ -7,8 +7,6 @@ import {
 } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
 
-const ElementName = 'CalcFormula';
-
 export class CompareCalcFormula {
   static compare(
     propertyName: string,
@@ -17,11 +15,10 @@ export class CompareCalcFormula {
   ): ICalcFormulaChange {
     const changes: Array<IMemberChange> = [];
     const change: ICalcFormulaChange = {
-      element: ElementName,
       propertyName: propertyName,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -57,7 +54,7 @@ export class CompareCalcFormula {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

@@ -7,14 +7,11 @@ import {
 } from './change.model';
 import { CompareVariables } from './compare-variables';
 
-const ElementName = 'Code';
-
 export class CompareCode {
   static compare(baseObject: any, customObject: any): ICodeChange {
     const changes: Array<IMemberChange> = [];
     const change: ICodeChange = {
-      element: ElementName,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -55,7 +52,7 @@ export class CompareCode {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

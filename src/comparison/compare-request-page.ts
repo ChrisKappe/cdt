@@ -9,8 +9,6 @@ import {
 import IRequestPage from 'cal-to-json/models/request-page';
 import { ComparePageControls } from './compare-page-controls';
 
-const ElementName = 'RequestPage';
-
 export class CompareRequestPage {
   static compare(
     baseObject: IRequestPage,
@@ -18,10 +16,9 @@ export class CompareRequestPage {
   ): IChange {
     const changes: Array<IMemberChange> = [];
     const change: IRequestPageChange = {
-      element: ElementName,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -57,7 +54,7 @@ export class CompareRequestPage {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

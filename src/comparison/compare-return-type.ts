@@ -7,16 +7,13 @@ import {
   MemberChange,
 } from './change.model';
 
-const ElementName = 'ReturnType';
-
 export class CompareReturnType {
   static compare(baseObject: IReturnType, customObject: IReturnType): IChange {
     const changes: Array<IMemberChange> = [];
     const change: IReturnTypeChange = {
-      element: ElementName,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -40,7 +37,7 @@ export class CompareReturnType {
       }
     }
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

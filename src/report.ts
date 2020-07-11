@@ -1,8 +1,8 @@
-import { IChange } from 'comparison/change.model';
+import { IAppObjectChange, IProcedureChange } from 'comparison/change.model';
 import * as Excel from 'exceljs';
 
 export class ExcelReport {
-  static write(changes: Array<IChange>, filePath: string) {
+  static write(changes: Array<IAppObjectChange>, filePath: string) {
     console.log(changes.length);
     let workbook = new Excel.Workbook();
 
@@ -15,7 +15,7 @@ export class ExcelReport {
 
   private static AddModifiedProcedures(
     workbook: Excel.Workbook,
-    changes: Array<IChange>
+    changes: Array<IAppObjectChange>
   ) {
     let worksheet = workbook.addWorksheet('Modified Procedures');
     worksheet.columns = [
@@ -37,27 +37,38 @@ export class ExcelReport {
     changes.forEach(appObjectChange => {
       if (appObjectChange.changes) {
         const codeChange = appObjectChange.changes.find(
-          i => i.element === 'Code'
+          i => i.memberName === 'CODE'
         );
 
-        if (codeChange && codeChange.changes) {
-          const proceduresChange = codeChange.changes.find(
-            i => i.element === 'Procedures'
+        if (
+          codeChange &&
+          codeChange.innerChange &&
+          codeChange.innerChange.changes
+        ) {
+          const proceduresChange = codeChange.innerChange.changes.find(
+            i => i.memberName === 'Procedures'
           );
 
-          if (proceduresChange && proceduresChange.changes) {
-            proceduresChange.changes.forEach(procedureChange => {
-              worksheet.addRow(
-                {
-                  objectType: appObjectChange.type,
-                  objectId: Number(appObjectChange.id),
-                  objectName: appObjectChange.name,
-                  procedureId: Number(procedureChange.id),
-                  procedureName: procedureChange.name,
-                  changeType: appObjectChange.change,
-                },
-                ''
-              );
+          if (
+            proceduresChange &&
+            proceduresChange.innerChange &&
+            proceduresChange.innerChange.changes
+          ) {
+            proceduresChange.innerChange.changes.forEach(procedureChange => {
+              if (procedureChange.innerChange) {
+                const procChange: IProcedureChange = procedureChange.innerChange as any;
+                worksheet.addRow(
+                  {
+                    objectType: appObjectChange.objectType,
+                    objectId: appObjectChange.objectId,
+                    objectName: appObjectChange.objectName,
+                    procedureId: procChange.procedureId,
+                    procedureName: procChange.procedureName,
+                    changeType: procChange.changeType,
+                  },
+                  ''
+                );
+              }
             });
           }
         }
@@ -67,7 +78,7 @@ export class ExcelReport {
 
   private static AddModifiedObjects(
     workbook: Excel.Workbook,
-    changes: Array<IChange>
+    changes: Array<IAppObjectChange>
   ) {
     let worksheet = workbook.addWorksheet('Modified Objects');
     worksheet.columns = [
@@ -84,10 +95,10 @@ export class ExcelReport {
     changes.forEach(change => {
       worksheet.addRow(
         {
-          objectType: change.type,
-          objectId: Number(change.id),
-          objectName: change.name,
-          changeType: change.change,
+          objectType: change.objectType,
+          objectId: change.objectId,
+          objectName: change.objectName,
+          changeType: change.changeType,
         },
         ''
       );

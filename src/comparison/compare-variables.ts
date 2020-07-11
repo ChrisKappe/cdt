@@ -8,9 +8,6 @@ import {
 } from './change.model';
 import { CompareTextML } from './compare-text-ml';
 
-const ElementCollectionName = 'Variables';
-const ElementName = 'Variable';
-
 export class CompareVariables {
   static compareCollection(
     propertyName: string,
@@ -19,9 +16,8 @@ export class CompareVariables {
   ): ICollectionChange<IVariableChange> {
     const changes: Array<IVariableChange> = [];
     const change: ICollectionChange<IVariableChange> = {
-      element: ElementCollectionName,
-      propertyName: propertyName,
-      change: ChangeType.NONE,
+      memberName: propertyName,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -35,15 +31,14 @@ export class CompareVariables {
       if (customVariable) {
         comparedVariables.push(customVariable);
         const change = this.compare(baseVariable, customVariable);
-        if (change.change !== ChangeType.NONE) changes.push(change);
+        if (change.changeType !== ChangeType.NONE) changes.push(change);
       } else {
         changes.push({
-          element: ElementName,
           id: baseVariable.id,
           name: baseVariable.name,
           base: baseVariable,
           custom: null,
-          change: ChangeType.DELETE,
+          changeType: ChangeType.DELETE,
         });
       }
     });
@@ -55,17 +50,16 @@ export class CompareVariables {
 
       if (!variableFound) {
         changes.push({
-          element: ElementName,
           id: customVariable.id,
           name: customVariable.name,
           base: null,
           custom: customVariable,
-          change: ChangeType.ADD,
+          changeType: ChangeType.ADD,
         });
       }
     });
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 
@@ -75,12 +69,11 @@ export class CompareVariables {
   ): IVariableChange {
     const changes: Array<IMemberChange> = [];
     const change: IVariableChange = {
-      element: ElementName,
       id: baseObject.id,
       name: baseObject.name,
       base: baseObject,
       custom: customObject,
-      change: ChangeType.NONE,
+      changeType: ChangeType.NONE,
       changes: changes,
     };
 
@@ -143,7 +136,7 @@ export class CompareVariables {
       )
     );
 
-    if (changes.length > 0) change.change = ChangeType.MODIFY;
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }
