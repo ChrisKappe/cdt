@@ -76,6 +76,8 @@ export class ComparePageActions {
         case 'constructor':
           break;
         case 'id':
+        case 'indentation':
+        case 'type':
           MemberChange.AddChange(
             changes,
             member,

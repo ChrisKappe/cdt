@@ -10,7 +10,7 @@ import TableFiltersReader from './table-filter-reader';
 import DataItemLinkReader from './data-item-link-reader';
 import OrderByReader from './order-by-reader';
 import TriggerReader from './trigger-reader';
-import { IPageAction, PageAction } from 'cal-to-json/models/page-action';
+import { IPageAction, PageAction } from '../models/page-action';
 
 export default class PropertyReader {
   static read(
@@ -113,7 +113,7 @@ export default class PropertyReader {
     const SEGMENTS_HEADER_BODY_EXPR = /\r?\n\}|\r?\n\{/;
     let lines = input.split(SEGMENTS_HEADER_BODY_EXPR);
     input =
-      lines.length === 2 ? StringHelper.remove2SpaceIndentation(lines[1]) : '';
+      lines.length >= 2 ? StringHelper.remove2SpaceIndentation(lines[1]) : '';
 
     const actions: Array<IPageAction> = [];
     lines = StringHelper.groupLines(input);
@@ -139,7 +139,7 @@ export default class PropertyReader {
     const indentation = Number(match[2]);
     const type = match[3];
 
-    let properties = match[5];
+    let properties = match[5] || '';
     properties = properties.replace(/^[ ]{12}/, '');
     properties = properties.replace(/\r?\n[ ]{12}/g, '\r\n');
     const props = PropertyReader.read(properties, PropertyMap.pageAction);

@@ -1,70 +1,268 @@
-import { IAppObjectChange, IProcedureChange } from 'comparison/change.model';
+import {
+  IAppObjectChange,
+  IProcedureChange,
+  IMemberChange,
+  ICodeChange,
+  ICollectionChange,
+  ChangeType,
+  IPropertyChange,
+  ITriggerChange,
+  ITableFieldChange,
+  IPageControlChange,
+  IPageActionChange,
+} from './comparison/change.model';
 import * as Excel from 'exceljs';
+import { IAppObject } from 'cal-to-json/cal/object-reader';
+import { IProperty } from 'cal-to-json/cal/property-map';
+import ITableField from 'cal-to-json/models/table-field';
+import { IProcedure } from 'cal-to-json/models/procedure';
+import { ITrigger } from 'cal-to-json/cal/trigger-reader';
 
 export class ExcelReport {
-  static write(changes: Array<IAppObjectChange>, filePath: string) {
-    console.log(changes.length);
+  static write(
+    changes: Array<IAppObjectChange>,
+    baseObjects: Array<IAppObject>,
+    customObjects: Array<IAppObject>,
+    filePath: string
+  ) {
     let workbook = new Excel.Workbook();
 
-    ExcelReport.AddModifiedObjects(workbook, changes);
-    ExcelReport.AddModifiedProcedures(workbook, changes);
-    ExcelReport.AddDebtors(workbook);
+    this.AddModifiedObjects(workbook, changes, 'Modified Objects');
+    this.AddModifiedFunctions(workbook, changes, 'Modified Functions');
+    this.AddModifiedTriggers(workbook, changes, 'Modified Triggers');
+    this.AddModifiedTableFieldTriggers(
+      workbook,
+      changes,
+      'Modified Field Triggers'
+    );
+    this.AddModifiedPageControlTriggers(
+      workbook,
+      changes,
+      'Modified Page Control Triggers'
+    );
+    this.AddModifiedPageActionTriggers(
+      workbook,
+      changes,
+      'Modified Page Action Triggers'
+    );
+
+    this.AddApplicationObjects(workbook, baseObjects, 'Base Objects');
+    this.AddApplicationObjects(workbook, customObjects, 'Customer Objects');
+    this.AddTableFields(workbook, baseObjects, 'Table Fields - Base');
+    this.AddTableFields(workbook, customObjects, 'Table Fields - Custom');
 
     workbook.xlsx.writeFile(filePath);
   }
 
-  private static AddModifiedProcedures(
+  static AddFunctions(
     workbook: Excel.Workbook,
-    changes: Array<IAppObjectChange>
+    objects: Array<IAppObject>,
+    sheetName: string
   ) {
-    let worksheet = workbook.addWorksheet('Modified Procedures');
+    let worksheet = workbook.addWorksheet(sheetName);
     worksheet.columns = [
       { header: 'Object Type', key: 'objectType' },
       { header: 'Object ID', key: 'objectId' },
       { header: 'Object Name', key: 'objectName' },
-      { header: 'Procedure ID', key: 'procedureId' },
-      { header: 'Procedure Name', key: 'procedureName' },
+      { header: 'Enabled', key: 'enabled' },
+      { header: 'Field ID', key: 'fieldId' },
+      { header: 'Field Name', key: 'fieldName' },
+      { header: 'DataType', key: 'dataType' },
+    ];
+
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
+    worksheet.columns[4].width = 15;
+    worksheet.columns[5].width = 40;
+    worksheet.columns[6].width = 15;
+
+    const tables = objects.filter(i => i.type === 'Table');
+
+    tables.forEach(table => {
+      const fields: Array<ITableField> = table['FIELDS'] || [];
+      fields.forEach(field => {
+        worksheet.addRow(
+          {
+            objectType: table.type,
+            objectId: table.id,
+            objectName: table.name,
+            enabled: field.enabled,
+            fieldId: field.id,
+            fieldName: field.name,
+            dataType: field.dataType,
+          },
+          ''
+        );
+      });
+    });
+  }
+
+  private static AddTableFields(
+    workbook: Excel.Workbook,
+    objects: Array<IAppObject>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = [
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Enabled', key: 'enabled' },
+      { header: 'Field ID', key: 'fieldId' },
+      { header: 'Field Name', key: 'fieldName' },
+      { header: 'DataType', key: 'dataType' },
+    ];
+
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
+    worksheet.columns[4].width = 15;
+    worksheet.columns[5].width = 40;
+    worksheet.columns[6].width = 15;
+
+    const tables = objects.filter(i => i.type === 'Table');
+
+    tables.forEach(table => {
+      const fields: Array<ITableField> = table['FIELDS'] || [];
+      fields.forEach(field => {
+        worksheet.addRow(
+          {
+            objectType: table.type,
+            objectId: table.id,
+            objectName: table.name,
+            enabled: field.enabled,
+            fieldId: field.id,
+            fieldName: field.name,
+            dataType: field.dataType,
+          },
+          ''
+        );
+      });
+    });
+  }
+
+  static AddApplicationObjects(
+    workbook: Excel.Workbook,
+    objects: Array<IAppObject>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = [
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Version List', key: 'versionList' },
+    ];
+
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 40;
+    objects.forEach(appObject => {
+      let versionList = this.getVersionList(appObject);
+      worksheet.addRow(
+        {
+          objectType: appObject.type,
+          objectId: appObject.id,
+          objectName: appObject.name,
+          versionList: versionList,
+        },
+        ''
+      );
+    });
+
+    worksheet.getColumn(1).numFmt = '$0.00';
+  }
+
+  private static getVersionList(appObject: IAppObject) {
+    const properties: Array<IProperty> = appObject['OBJECT-PROPERTIES'];
+    let versionList = '';
+    const versionListProp = properties.find(
+      item => item.name === 'Version List'
+    );
+    if (versionListProp) versionList = versionListProp.value;
+    return versionList;
+  }
+
+  private static AddModifiedFunctions(
+    workbook: Excel.Workbook,
+    changes: Array<IAppObjectChange>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = [
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Function ID', key: 'functionId' },
+      { header: 'Function Name', key: 'functionName' },
+      { header: 'Has DotNet Variables', key: 'hasDotNetVariables' },
       { header: 'Change Type', key: 'changeType' },
     ];
 
-    worksheet.columns[0].width = 10;
-    worksheet.columns[1].width = 10;
-    worksheet.columns[2].width = 30;
-    worksheet.columns[3].width = 10;
-    worksheet.columns[4].width = 30;
-    worksheet.columns[5].width = 10;
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
+    worksheet.columns[4].width = 40;
+    worksheet.columns[5].width = 15;
+    worksheet.columns[6].width = 15;
 
     changes.forEach(appObjectChange => {
-      if (appObjectChange.changes) {
-        const codeChange = appObjectChange.changes.find(
-          i => i.memberName === 'CODE'
+      if (appObjectChange.changeType === ChangeType.ADD) {
+        const appObject = appObjectChange.custom;
+        if (appObject) {
+          const procedures: Array<IProcedure> = appObject['CODE']
+            ? appObject['CODE'].procedures || []
+            : [];
+
+          procedures.forEach(procedure => {
+            const hasDotNetVariables = this.procedureHasDotNetVariables(
+              procedure
+            );
+            worksheet.addRow(
+              {
+                objectType: appObjectChange.objectType,
+                objectId: appObjectChange.objectId,
+                objectName: appObjectChange.objectName,
+                functionId: procedure.id,
+                functionName: procedure.name,
+                changeType: ChangeType.ADD,
+                hasDotNetVariables: hasDotNetVariables ? 'Yes' : 'No',
+              },
+              ''
+            );
+          });
+        }
+      } else {
+        const codeChange = ExcelReport.getObjectChange<ICodeChange>(
+          'CODE',
+          appObjectChange.changes
         );
-
-        if (codeChange && codeChange.change && codeChange.change.changes) {
-          const proceduresChange = codeChange.change.changes.find(
-            i => i.memberName === 'Procedures'
-          );
-
-          if (
-            proceduresChange &&
-            proceduresChange.change &&
-            proceduresChange.change.changes
-          ) {
-            proceduresChange.change.changes.forEach(procedureChange => {
-              if (procedureChange.change) {
-                const procChange: IProcedureChange = procedureChange.change as any;
-                worksheet.addRow(
-                  {
-                    objectType: appObjectChange.objectType,
-                    objectId: appObjectChange.objectId,
-                    objectName: appObjectChange.objectName,
-                    procedureId: procChange.procedureId,
-                    procedureName: procChange.procedureName,
-                    changeType: procChange.changeType,
-                  },
-                  ''
-                );
-              }
+        if (codeChange) {
+          const proceduresChange = this.getObjectChange<
+            ICollectionChange<IProcedureChange>
+          >('procedures', codeChange.changes);
+          if (proceduresChange && proceduresChange.changes) {
+            proceduresChange.changes.forEach(procedureChange => {
+              const hasDotNetVariables = this.hasDotNetVariables(
+                procedureChange
+              );
+              worksheet.addRow(
+                {
+                  objectType: appObjectChange.objectType,
+                  objectId: appObjectChange.objectId,
+                  objectName: appObjectChange.objectName,
+                  functionId: procedureChange.procedureId,
+                  functionName: procedureChange.procedureName,
+                  changeType: procedureChange.changeType,
+                  hasDotNetVariables: hasDotNetVariables ? 'Yes' : 'No',
+                },
+                ''
+              );
             });
           }
         }
@@ -72,11 +270,92 @@ export class ExcelReport {
     });
   }
 
+  private static hasDotNetVariables(
+    procedureChange: IProcedureChange
+  ): boolean {
+    const procedure = procedureChange.custom || procedureChange.base;
+    if (procedure === null) {
+      return false;
+    }
+
+    return this.procedureHasDotNetVariables(procedure);
+  }
+
+  private static triggerChangeHasDotNetVariables(
+    propertyChange: IPropertyChange
+  ): boolean {
+    if (propertyChange.changeType === ChangeType.MODIFY) {
+      const triggerChange: ITriggerChange = propertyChange.change as any;
+      if (!triggerChange) throw new Error('Trigger Change should not be null');
+      const trigger = triggerChange.custom || triggerChange.base;
+      if (!trigger) throw new Error('Trigger should not be null');
+      return this.triggerHasDotNetVariables(trigger);
+    } else {
+      const property = propertyChange.custom || propertyChange.base;
+      if (!property) throw new Error('Property should not be null');
+      return this.triggerHasDotNetVariables(property.value);
+    }
+  }
+
+  private static triggerHasDotNetVariables(trigger: ITrigger) {
+    if (trigger.variables) {
+      const variable = trigger.variables.find(
+        item =>
+          item.datatype === 'DotNet' ||
+          item.datatype === 'Automation' ||
+          item.datatype === 'OCX'
+      );
+      if (variable) return true;
+    }
+
+    return false;
+  }
+
+  private static procedureHasDotNetVariables(procedure: IProcedure) {
+    if (procedure.variables) {
+      const variable = procedure.variables.find(
+        item =>
+          item.datatype === 'DotNet' ||
+          item.datatype === 'Automation' ||
+          item.datatype === 'OCX'
+      );
+      if (variable) return true;
+    }
+
+    if (procedure.parameters) {
+      const parameter = procedure.parameters.find(
+        item =>
+          item.variable.datatype === 'DotNet' ||
+          item.variable.datatype === 'Automation' ||
+          item.variable.datatype === 'OCX'
+      );
+      if (parameter) return true;
+    }
+
+    return false;
+  }
+
+  private static getObjectChange<T>(
+    memberName: string,
+    changes?: Array<IMemberChange>
+  ): T | null {
+    if (changes) {
+      const member = changes.find(i => i.memberName === memberName);
+      if (member && member.change) {
+        const change: T = member.change as any;
+        return change;
+      }
+    }
+
+    return null;
+  }
+
   private static AddModifiedObjects(
     workbook: Excel.Workbook,
-    changes: Array<IAppObjectChange>
+    changes: Array<IAppObjectChange>,
+    sheetName: string
   ) {
-    let worksheet = workbook.addWorksheet('Modified Objects');
+    let worksheet = workbook.addWorksheet(sheetName);
     worksheet.columns = [
       { header: 'Object Type', key: 'objectType' },
       { header: 'Object ID', key: 'objectId' },
@@ -84,10 +363,10 @@ export class ExcelReport {
       { header: 'Change Type', key: 'changeType' },
     ];
 
-    worksheet.columns[0].width = 10;
-    worksheet.columns[1].width = 10;
-    worksheet.columns[2].width = 30;
-    worksheet.columns[3].width = 10;
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
     changes.forEach(change => {
       worksheet.addRow(
         {
@@ -99,147 +378,269 @@ export class ExcelReport {
         ''
       );
     });
-
-    worksheet.getColumn(1).numFmt = '$0.00';
   }
 
-  private static AddDebtors(workbook: Excel.Workbook) {
-    let worksheet = workbook.addWorksheet('Debtors');
+  private static AddModifiedTriggers(
+    workbook: Excel.Workbook,
+    changes: Array<IAppObjectChange>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
     worksheet.columns = [
-      { header: 'First Name', key: 'firstName' },
-      { header: 'Last Name', key: 'lastName' },
-      { header: 'Purchase Price', key: 'purchasePrice' },
-      { header: 'Payments Made', key: 'paymentsMade' },
-      { header: 'Amount Remaining', key: 'amountRemaining' },
-      { header: '% Remaining', key: 'percentRemaining' },
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Trigger Name', key: 'triggerName' },
+      { header: 'Has DotNet Variables', key: 'hasDotNetVariables' },
+      { header: 'Change Type', key: 'changeType' },
     ];
 
-    // force the columns to be at least as long as their header row.
-    // Have to take this approach because ExcelJS doesn't have an autofit property.
-    worksheet.columns.forEach(column => {
-      const header = column.header || '';
-      column.width = header.length < 12 ? 12 : header.length;
-    });
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 40;
+    worksheet.columns[4].width = 15;
+    worksheet.columns[5].width = 15;
 
-    const data = [
-      {
-        firstName: 'John',
-        lastName: 'Bailey',
-        purchasePrice: 1000,
-        paymentsMade: 100,
-      },
-      {
-        firstName: 'Leonard',
-        lastName: 'Clark',
-        purchasePrice: 1000,
-        paymentsMade: 150,
-      },
-      {
-        firstName: 'Phil',
-        lastName: 'Knox',
-        purchasePrice: 1000,
-        paymentsMade: 200,
-      },
-      {
-        firstName: 'Sonia',
-        lastName: 'Glover',
-        purchasePrice: 1000,
-        paymentsMade: 250,
-      },
-      {
-        firstName: 'Adam',
-        lastName: 'Mackay',
-        purchasePrice: 1000,
-        paymentsMade: 350,
-      },
-      {
-        firstName: 'Lisa',
-        lastName: 'Ogden',
-        purchasePrice: 1000,
-        paymentsMade: 400,
-      },
-      {
-        firstName: 'Elizabeth',
-        lastName: 'Murray',
-        purchasePrice: 1000,
-        paymentsMade: 500,
-      },
-      {
-        firstName: 'Caroline',
-        lastName: 'Jackson',
-        purchasePrice: 1000,
-        paymentsMade: 350,
-      },
-      {
-        firstName: 'Kylie',
-        lastName: 'James',
-        purchasePrice: 1000,
-        paymentsMade: 900,
-      },
-      {
-        firstName: 'Harry',
-        lastName: 'Peake',
-        purchasePrice: 1000,
-        paymentsMade: 1000,
-      },
+    changes.forEach(appObjectChange => {
+      if (
+        appObjectChange.objectType === 'Table' ||
+        appObjectChange.objectType === 'Page'
+      ) {
+        const propertiesChange = ExcelReport.getObjectChange<
+          ICollectionChange<IPropertyChange>
+        >('PROPERTIES', appObjectChange.changes);
+        if (propertiesChange && propertiesChange.changes) {
+          const triggerPropertyChanges = propertiesChange.changes.filter(
+            i => i.propertyType === 'TRIGGER'
+          );
+
+          triggerPropertyChanges.forEach(propertyChange => {
+            const hasDotNetVariables = this.triggerChangeHasDotNetVariables(
+              propertyChange
+            );
+            worksheet.addRow(
+              {
+                objectType: appObjectChange.objectType,
+                objectId: appObjectChange.objectId,
+                objectName: appObjectChange.objectName,
+                triggerName: propertyChange.propertyName,
+                changeType: propertyChange.changeType,
+                hasDotNetVariables: hasDotNetVariables ? 'Yes' : 'No',
+              },
+              ''
+            );
+          });
+        }
+      }
+    });
+  }
+
+  private static AddModifiedTableFieldTriggers(
+    workbook: Excel.Workbook,
+    changes: Array<IAppObjectChange>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = [
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Field ID', key: 'fieldId' },
+      { header: 'Field Name', key: 'fieldName' },
+      { header: 'Trigger Name', key: 'triggerName' },
+      { header: 'Has DotNet Variables', key: 'hasDotNetVariables' },
+      { header: 'Change Type', key: 'changeType' },
     ];
 
-    // Dump all the data into Excel
-    data.forEach((e, index) => {
-      // row 1 is the header.
-      const rowIndex = index + 2;
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
+    worksheet.columns[4].width = 40;
+    worksheet.columns[5].width = 40;
+    worksheet.columns[6].width = 15;
+    worksheet.columns[7].width = 15;
 
-      // By using destructuring we can easily dump all of the data into the row without doing much
-      // We can add formulas pretty easily by providing the formula property.
-      worksheet.addRow(
-        {
-          ...e,
-          amountRemaining: {
-            formula: `=C${rowIndex}-D${rowIndex}`,
-          },
-          percentRemaining: {
-            formula: `=E${rowIndex}/C${rowIndex}`,
-          },
-        },
-        ''
-      );
+    changes.forEach(appObjectChange => {
+      if (appObjectChange.objectType === 'Table') {
+        const fieldsChange = ExcelReport.getObjectChange<
+          ICollectionChange<ITableFieldChange>
+        >('FIELDS', appObjectChange.changes);
+
+        if (fieldsChange && fieldsChange.changes) {
+          fieldsChange.changes.forEach(fieldChange => {
+            const fieldPropertiesChange = ExcelReport.getObjectChange<
+              ICollectionChange<IPropertyChange>
+            >('properties', fieldChange.changes);
+
+            if (fieldPropertiesChange && fieldPropertiesChange.changes) {
+              const triggerPropertyChanges = fieldPropertiesChange.changes.filter(
+                i => i.propertyType === 'TRIGGER'
+              );
+
+              triggerPropertyChanges.forEach(propertyChange => {
+                const hasDotNetVariables = this.triggerChangeHasDotNetVariables(
+                  propertyChange
+                );
+                worksheet.addRow(
+                  {
+                    objectType: appObjectChange.objectType,
+                    objectId: appObjectChange.objectId,
+                    objectName: appObjectChange.objectName,
+                    fieldId: fieldChange.fieldId,
+                    fieldName: fieldChange.fieldName,
+                    triggerName: propertyChange.propertyName,
+                    changeType: propertyChange.changeType,
+                    hasDotNetVariables: hasDotNetVariables ? 'Yes' : 'No',
+                  },
+                  ''
+                );
+              });
+            }
+          });
+        }
+      }
     });
+  }
 
-    // Set the way columns C - F are formatted
-    const figureColumns = [3, 4, 5, 6];
-    figureColumns.forEach(i => {
-      worksheet.getColumn(i).numFmt = '$0.00';
-      worksheet.getColumn(i).alignment = { horizontal: 'center' };
+  private static AddModifiedPageControlTriggers(
+    workbook: Excel.Workbook,
+    changes: Array<IAppObjectChange>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = [
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Control ID', key: 'controlId' },
+      { header: 'Trigger Name', key: 'triggerName' },
+      { header: 'Has DotNet Variables', key: 'hasDotNetVariables' },
+      { header: 'Change Type', key: 'changeType' },
+    ];
+
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
+    worksheet.columns[4].width = 40;
+    worksheet.columns[5].width = 15;
+    worksheet.columns[6].width = 15;
+
+    changes.forEach(appObjectChange => {
+      if (appObjectChange.objectType === 'Page') {
+        const controlsChange = ExcelReport.getObjectChange<
+          ICollectionChange<IPageControlChange>
+        >('CONTROLS', appObjectChange.changes);
+
+        if (controlsChange && controlsChange.changes) {
+          controlsChange.changes.forEach(controlChange => {
+            const propertiesChange = ExcelReport.getObjectChange<
+              ICollectionChange<IPropertyChange>
+            >('properties', controlChange.changes);
+
+            if (propertiesChange && propertiesChange.changes) {
+              const triggerPropertyChanges = propertiesChange.changes.filter(
+                i => i.propertyType === 'TRIGGER'
+              );
+
+              triggerPropertyChanges.forEach(propertyChange => {
+                const hasDotNetVariables = this.triggerChangeHasDotNetVariables(
+                  propertyChange
+                );
+                worksheet.addRow(
+                  {
+                    objectType: appObjectChange.objectType,
+                    objectId: appObjectChange.objectId,
+                    objectName: appObjectChange.objectName,
+                    controlId: controlChange.id,
+                    triggerName: propertyChange.propertyName,
+                    changeType: propertyChange.changeType,
+                    hasDotNetVariables: hasDotNetVariables ? 'Yes' : 'No',
+                  },
+                  ''
+                );
+              });
+            }
+          });
+        }
+      }
     });
+  }
 
-    // Column F needs to be formatted as a percentage.
-    worksheet.getColumn(6).numFmt = '0.00%';
+  private static AddModifiedPageActionTriggers(
+    workbook: Excel.Workbook,
+    changes: Array<IAppObjectChange>,
+    sheetName: string
+  ) {
+    let worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = [
+      { header: 'Object Type', key: 'objectType' },
+      { header: 'Object ID', key: 'objectId' },
+      { header: 'Object Name', key: 'objectName' },
+      { header: 'Action ID', key: 'actionId' },
+      { header: 'Trigger Name', key: 'triggerName' },
+      { header: 'Has DotNet Variables', key: 'hasDotNetVariables' },
+      { header: 'Change Type', key: 'changeType' },
+    ];
 
-    // loop through all of the rows and set the outline style.
-    worksheet.eachRow({ includeEmpty: false }, function(_row, rowNumber) {
-      worksheet.getCell(`A${rowNumber}`).border = {
-        top: { style: 'thin' },
-        left: { style: 'thin' },
-        bottom: { style: 'thin' },
-        right: { style: undefined },
-      };
+    worksheet.columns[0].width = 15;
+    worksheet.columns[1].width = 15;
+    worksheet.columns[2].width = 40;
+    worksheet.columns[3].width = 15;
+    worksheet.columns[4].width = 40;
+    worksheet.columns[5].width = 15;
+    worksheet.columns[6].width = 15;
 
-      const insideColumns = ['B', 'C', 'D', 'E'];
-      insideColumns.forEach(v => {
-        worksheet.getCell(`${v}${rowNumber}`).border = {
-          top: { style: 'thin' },
-          bottom: { style: 'thin' },
-          left: { style: undefined },
-          right: { style: undefined },
-        };
-      });
+    changes.forEach(appObjectChange => {
+      if (appObjectChange.objectType === 'Page') {
+        const propertiesChange = ExcelReport.getObjectChange<
+          ICollectionChange<IPropertyChange>
+        >('PROPERTIES', appObjectChange.changes);
 
-      worksheet.getCell(`F${rowNumber}`).border = {
-        top: { style: 'thin' },
-        left: { style: undefined },
-        bottom: { style: 'thin' },
-        right: { style: 'thin' },
-      };
+        if (propertiesChange && propertiesChange.changes) {
+          const actionListChange = propertiesChange.changes.find(
+            i =>
+              i.propertyName === 'ActionList' &&
+              i.propertyType === 'ACTION_LIST'
+          );
+          if (actionListChange && actionListChange.change) {
+            const actionsChange: ICollectionChange<IPageActionChange> = actionListChange.change as any;
+            if (actionsChange.changes) {
+              actionsChange.changes.forEach(actionChange => {
+                const actionPropertiesChange = ExcelReport.getObjectChange<
+                  ICollectionChange<IPropertyChange>
+                >('properties', actionChange.changes);
+
+                if (actionPropertiesChange && actionPropertiesChange.changes) {
+                  const triggerPropertyChanges = actionPropertiesChange.changes.filter(
+                    i => i.propertyType === 'TRIGGER'
+                  );
+
+                  triggerPropertyChanges.forEach(propertyChange => {
+                    const hasDotNetVariables = this.triggerChangeHasDotNetVariables(
+                      propertyChange
+                    );
+                    worksheet.addRow(
+                      {
+                        objectType: appObjectChange.objectType,
+                        objectId: appObjectChange.objectId,
+                        objectName: appObjectChange.objectName,
+                        actionId: actionChange.id,
+                        triggerName: propertyChange.propertyName,
+                        changeType: propertyChange.changeType,
+                        hasDotNetVariables: hasDotNetVariables ? 'Yes' : 'No',
+                      },
+                      ''
+                    );
+                  });
+                }
+              });
+            }
+          }
+        }
+      }
     });
   }
 }

@@ -127,7 +127,7 @@ export interface ITableViewChange
 }
 
 export interface ITriggerChange extends IObjectChange, IChangedValue<ITrigger> {
-  propertyName: string;
+  triggerName: string;
 }
 
 export interface ILangTextChange extends IChange {
@@ -205,6 +205,7 @@ export interface IPropertyChange
   extends IChange,
     IUndefinedChangedValue<IProperty> {
   propertyName: string;
+  propertyType: string;
   change?: IObjectChange;
 }
 

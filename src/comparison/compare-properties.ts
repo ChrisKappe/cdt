@@ -41,6 +41,7 @@ export class CompareProperties {
       } else {
         changes.push({
           propertyName: baseProperty.name,
+          propertyType: baseProperty.type,
           base: baseProperty,
           custom: null,
           changeType: ChangeType.DELETE,
@@ -56,6 +57,7 @@ export class CompareProperties {
       if (!propertyFound) {
         changes.push({
           propertyName: customProperty.name,
+          propertyType: customProperty.type,
           base: null,
           custom: customProperty,
           changeType: ChangeType.ADD,
@@ -73,6 +75,7 @@ export class CompareProperties {
   ): IPropertyChange {
     const change: IPropertyChange = {
       propertyName: baseObject.name,
+      propertyType: baseObject.type,
       base: baseObject,
       custom: customObject,
       changeType: ChangeType.NONE,
@@ -87,6 +90,7 @@ export class CompareProperties {
         if (baseObject.value !== customObject.value) {
           return {
             propertyName: baseObject.name,
+            propertyType: baseObject.type,
             base: baseObject.value,
             custom: customObject.value,
             changeType: ChangeType.MODIFY,
@@ -96,6 +100,7 @@ export class CompareProperties {
       case 'TRIGGER':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareTrigger.compare(
             baseObject.name,
             baseObject.value,
@@ -105,11 +110,13 @@ export class CompareProperties {
       case 'TEXT_ML':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareTextML.compareCollection(baseObject.value, customObject.value)
         );
       case 'TABLE_RELATION':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareTableRelation.compare(
             baseObject.name,
             baseObject.value,
@@ -119,6 +126,7 @@ export class CompareProperties {
       case 'CALC_FORMULA':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareCalcFormula.compare(
             baseObject.name,
             baseObject.value,
@@ -128,11 +136,13 @@ export class CompareProperties {
       case 'PERMISSION':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           ComparePermissions.compare(baseObject.value, customObject.value)
         );
       case 'PERMISSIONS':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           ComparePermissions.compareCollection(
             baseObject.value,
             customObject.value
@@ -141,6 +151,7 @@ export class CompareProperties {
       case 'ACTION_LIST':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           ComparePageActions.compareCollection(
             baseObject.value,
             customObject.value
@@ -149,6 +160,7 @@ export class CompareProperties {
       case 'TABLE_FILTER':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareFilterConditions.compareCollection(
             baseObject.value || [],
             customObject.value || []
@@ -157,6 +169,7 @@ export class CompareProperties {
       case 'DATA_ITEM_LINK':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareDataItemLinks.compareCollection(
             baseObject.value || [],
             customObject.value || []
@@ -165,6 +178,7 @@ export class CompareProperties {
       case 'TABLE_VIEW':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareTableView.compare(
             baseObject.name,
             baseObject.value,
@@ -174,6 +188,7 @@ export class CompareProperties {
       case 'ORDERBY':
         return this.GetPropertyChange(
           baseObject.name,
+          baseObject.type,
           CompareOrderBy.compare(
             baseObject.name,
             baseObject.value,
@@ -189,10 +204,12 @@ export class CompareProperties {
 
   private static GetPropertyChange(
     propertyName: string,
+    propertyType: string,
     change: IChange
   ): IPropertyChange {
     return {
       propertyName: propertyName,
+      propertyType: propertyType,
       change: change,
       changeType: change.changeType,
     };

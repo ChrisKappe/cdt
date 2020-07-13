@@ -318,6 +318,7 @@ export default class PropertyMap {
     { name: 'RunPageMode', type: PropertyType.Option },
     { name: 'AccessByPermission', type: PropertyType.Permission },
     { name: 'ApplicationArea', type: PropertyType.Text },
+    { name: 'ActionContainerType', type: PropertyType.Text },
     { name: 'Promoted', type: PropertyType.Boolean },
     { name: 'PromotedCategory', type: PropertyType.Boolean },
     { name: 'PromotedIsBig', type: PropertyType.Boolean },
@@ -331,6 +332,7 @@ export default class PropertyMap {
     { name: 'RunPageOnRec', type: PropertyType.Boolean },
     { name: 'InFooterBar', type: PropertyType.Boolean },
     { name: 'Gesture', type: PropertyType.Boolean },
+    { name: 'IsHeader', type: PropertyType.Boolean },
 
     { name: 'OnAction', type: PropertyType.Trigger },
   ];

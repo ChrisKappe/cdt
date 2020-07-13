@@ -87,19 +87,13 @@ export default class ObjectReader {
     if (!match) throw new Error('object header error');
 
     const appObject = this.getObjectHeader(match[1]);
-    console.log(
-      `Type: ${appObject.type}, ID: ${appObject.id}, Name: ${appObject.name}`
-    );
+    // console.log(`${appObject.type} ${appObject.id} ${appObject.name}`);
 
     const body = match[3];
     const segments = SegmentReader.splitSegments(appObject.type, body);
     segments.forEach(segment => {
       appObject[segment.name] = segment.body;
     });
-
-    // for (let i = 0; i < segments.length; i++) {
-    //   appObject.segments.push(segments[i]);
-    // }
 
     return appObject;
   }

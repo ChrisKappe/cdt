@@ -15,7 +15,7 @@ export class CompareTrigger {
   ): ITriggerChange {
     const changes: Array<IMemberChange> = [];
     const change: ITriggerChange = {
-      propertyName: triggerName,
+      triggerName: triggerName,
       base: baseTrigger,
       custom: customTrigger,
       changeType: ChangeType.NONE,
@@ -38,6 +38,7 @@ export class CompareTrigger {
       customTrigger.body
     );
 
+    if (changes.length > 0) change.changeType = ChangeType.MODIFY;
     return change;
   }
 }

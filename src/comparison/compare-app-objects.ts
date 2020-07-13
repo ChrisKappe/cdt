@@ -27,9 +27,9 @@ export class CompareAppObjects {
     const comparedObjects: Array<IAppObject> = [];
 
     baseObjects.forEach(baseObject => {
-      console.log(
-        `Comparing: ${baseObject.type} ${baseObject.id} ${baseObject.name}`
-      );
+      // console.log(
+      //   `Comparing: ${baseObject.type} ${baseObject.id} ${baseObject.name}`
+      // );
       let customObject = customObjects.find(
         item => item.id === baseObject.id && item.type === baseObject.type
       );
