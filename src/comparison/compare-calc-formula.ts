@@ -1,4 +1,4 @@
-import ICalcFormula from 'cal-to-json/models/calc-formula';
+import ICalcFormula from '../cal-to-json/models/calc-formula';
 import {
   ChangeType,
   ICalcFormulaChange,

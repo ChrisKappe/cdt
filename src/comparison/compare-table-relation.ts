@@ -1,4 +1,4 @@
-import ITableRelation from 'cal-to-json/models/table-relation';
+import ITableRelation from '../cal-to-json/models/table-relation';
 import {
   ChangeType,
   ITableRelationChange,

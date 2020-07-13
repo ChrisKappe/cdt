@@ -1,4 +1,4 @@
-import IFieldGroup from 'cal-to-json/models/field-group';
+import IFieldGroup from '../cal-to-json/models/field-group';
 import {
   ChangeType,
   IFieldGroupChange,

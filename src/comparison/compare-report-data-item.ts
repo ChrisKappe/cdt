@@ -6,7 +6,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import IReportDataItem from 'cal-to-json/models/report-data-item';
+import IReportDataItem from '../cal-to-json/models/report-data-item';
 
 export class CompareReportDataItems {
   static compareCollection(

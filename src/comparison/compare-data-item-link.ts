@@ -5,7 +5,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import { IDataItemLink } from 'cal-to-json/cal/data-item-link-reader';
+import { IDataItemLink } from '../cal-to-json/cal/data-item-link-reader';
 
 export class CompareDataItemLinks {
   static compareCollection(

@@ -62,7 +62,7 @@ export default class VariableReader {
 
   static readMultiple(input: string): Array<IVariable> | undefined {
     let variables: Array<IVariable> | undefined = undefined;
-    input = input?.replace(/^VAR\r?\n/, '');
+    input = input.replace(/^VAR\r?\n/, '');
     input = StringHelper.remove2SpaceIndentation(input);
     const lines = StringHelper.groupLines(input);
     for (let i = 0; i < lines.length; i++) {

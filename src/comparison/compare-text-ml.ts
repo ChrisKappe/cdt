@@ -1,4 +1,4 @@
-import ILangText from 'cal-to-json/models/lang-text';
+import ILangText from '../cal-to-json/models/lang-text';
 import { ChangeType, ILangTextChange, ICollectionChange } from './change.model';
 
 export class CompareTextML {

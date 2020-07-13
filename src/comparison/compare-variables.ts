@@ -1,4 +1,4 @@
-import { IVariable } from 'cal-to-json/cal/variable-reader';
+import { IVariable } from '../cal-to-json/cal/variable-reader';
 import {
   ChangeType,
   IVariableChange,

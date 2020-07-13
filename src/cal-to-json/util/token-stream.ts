@@ -216,11 +216,11 @@ export default class TokenStream {
   }
 
   get currentTokenValue() {
-    return this.current()?.value;
+    return this.current().value;
   }
 
   get currentTokenType() {
-    return this.current()?.type;
+    return this.current().type;
   }
 
   get EOS() {

@@ -1,4 +1,4 @@
-import { IAppObject } from 'cal-to-json/cal/object-reader';
+import { IAppObject } from '../cal-to-json/cal/object-reader';
 import {
   IAppObjectChange,
   ChangeType,

@@ -1,18 +1,25 @@
 export default class StringHelper {
+  static join(
+    values: Array<string> | null | undefined,
+    separator: string
+  ): string {
+    if (values) return values.join(separator);
+    return '';
+  }
   static escapeDoubleQuoteString(input: string): string {
-    return input?.replace(/"/g, '""');
+    return input.replace(/"/g, '""');
   }
 
   static escapeSingleQuoteString(input: string): string {
-    return input?.replace(/'/g, "''");
+    return input.replace(/'/g, "''");
   }
 
   static unescapeSingleQuoteString(input: string): string {
-    return input?.replace(/^'(.*)'$/, '$1');
+    return input.replace(/^'(.*)'$/, '$1');
   }
 
   static unescapeDoubleQuoteString(input: string): string {
-    return input?.replace(/^"(.*)"$/, '$1');
+    return input.replace(/^"(.*)"$/, '$1');
   }
 
   static unescapeBrackets(input: string) {

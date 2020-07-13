@@ -6,7 +6,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import { IQueryElement } from 'cal-to-json/cal/query-reader';
+import { IQueryElement } from '../cal-to-json/cal/query-reader';
 
 export class CompareQueryElements {
   static compareCollection(

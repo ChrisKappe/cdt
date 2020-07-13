@@ -1,4 +1,4 @@
-import { IProcedure } from 'cal-to-json/models/procedure';
+import { IProcedure } from '../cal-to-json/models/procedure';
 import {
   ChangeType,
   IProcedureChange,

@@ -6,7 +6,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import IRequestPage from 'cal-to-json/models/request-page';
+import IRequestPage from '../cal-to-json/models/request-page';
 import { ComparePageControls } from './compare-page-controls';
 
 export class CompareRequestPage {

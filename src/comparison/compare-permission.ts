@@ -1,4 +1,4 @@
-import IPermission from 'cal-to-json/models/permission';
+import IPermission from '../cal-to-json/models/permission';
 import {
   ChangeType,
   IPermissionChange,

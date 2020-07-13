@@ -7,7 +7,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import IReportLabel from 'cal-to-json/models/report-label';
+import IReportLabel from '../cal-to-json/models/report-label';
 
 export class CompareReportLabels {
   static compareCollection(

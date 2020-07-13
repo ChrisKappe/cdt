@@ -1,4 +1,4 @@
-import { IAttribute } from 'cal-to-json/cal/attribute-reader';
+import { IAttribute } from '../cal-to-json/cal/attribute-reader';
 import {
   ChangeType,
   IAttributeChange,

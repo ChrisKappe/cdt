@@ -1,4 +1,4 @@
-import { IParameter } from 'cal-to-json/models/parameter';
+import { IParameter } from '../cal-to-json/models/parameter';
 import {
   ChangeType,
   IParameterChange,

@@ -6,7 +6,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import { IXMLportElement } from 'cal-to-json/cal/xml-port-reader';
+import { IXMLportElement } from '../cal-to-json/cal/xml-port-reader';
 
 export class CompareXMLportElements {
   static compareCollection(

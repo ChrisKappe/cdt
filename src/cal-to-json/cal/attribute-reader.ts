@@ -163,6 +163,7 @@ export default class AttributeReader {
       case 'Internal':
       case 'Test':
       case 'ServiceEnabled':
+      case 'NonDebuggableAttribute':
         if (params) throw new Error(`Invalid attribute: ${input}`);
 
         return new Attribute(type);

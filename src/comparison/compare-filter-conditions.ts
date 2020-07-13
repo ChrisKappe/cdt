@@ -1,4 +1,4 @@
-import IFilterCondition from 'cal-to-json/models/filter-condition';
+import IFilterCondition from '../cal-to-json/models/filter-condition';
 import {
   ChangeType,
   IFilterConditionChange,

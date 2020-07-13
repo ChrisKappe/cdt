@@ -1,4 +1,4 @@
-import { IProperty } from 'cal-to-json/cal/property-map';
+import { IProperty } from '../cal-to-json/cal/property-map';
 import {
   ChangeType,
   IPropertyChange,

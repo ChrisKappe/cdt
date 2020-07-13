@@ -1,5 +1,5 @@
 import { CompareVariables } from './compare-variables';
-import { ITrigger } from 'cal-to-json/cal/trigger-reader';
+import { ITrigger } from '../cal-to-json/cal/trigger-reader';
 import {
   ChangeType,
   ITriggerChange,

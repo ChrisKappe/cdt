@@ -1,27 +1,42 @@
-# TSDX Bootstrap
+# CDT
+Dynamics NAV customization detection tool.
 
-This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+This tool will take NAV object files exported as text from Base / Standard database, Custom / Customer databases and generate an Excel Report with the following details.
 
-## Local Development
+* List of All Modified Objects
+* List of All Modified Functions
+* List of All Modified Triggers
+* List of All Automation / DotNet / OCX controls used.
 
-Below is a list of commands you will probably find useful.
+and also
+* List of All Objects from the Base / Standard
+* List of All Objects from the Custom / Customer
+* List of All Fields from Base / Standard
+* List of All Fields from Custom / Standard
+* List of All Functions from Base / Standard
+* List of All Functions from Custom / Standard
 
-### `npm start` or `yarn start`
 
-Runs the project in development/watch mode. Your project will be rebuilt upon changes. TSDX has a special logger for you convenience. Error messages are pretty printed and formatted for compatibility VS Code's Problems tab.
+## Installation
 
-<img src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif" width="600" />
+```sh
+npm install @msnraju/cdt -g
+```
 
-Your library will be rebuilt if you make edits.
+## Usage
 
-### `npm run build` or `yarn build`
+```sh
+cdt --base <<base object file>> --custom <<custom object file>> --output <output file>.xlsx`
+```
 
-Bundles the package to the `dist` folder.
-The package is optimized and bundled with Rollup into multiple formats (CommonJS, UMD, and ES Module).
+```
+Usage: cdt [options]
 
-<img src="https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif" width="600" />
+Options:
+  -V, --version            output the version number
+  -b, --base <filename>    Specify the base objects text file.
+  -c, --custom <filename>  Specify the custom objects text file.
+  -o, --output <filename>  Specify the excel output file. (default: "report.xlsx")
+  -h, --help               display help for command
+```
 
-### `npm test` or `yarn test`
-
-Runs the test watcher (Jest) in an interactive mode.
-By default, runs tests related to files changed since the last commit.

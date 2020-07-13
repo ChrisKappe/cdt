@@ -6,7 +6,7 @@ import {
   IMemberChange,
   MemberChange,
 } from './change.model';
-import { IPageAction } from 'cal-to-json/models/page-action';
+import { IPageAction } from '../cal-to-json/models/page-action';
 
 export class ComparePageActions {
   static compareCollection(

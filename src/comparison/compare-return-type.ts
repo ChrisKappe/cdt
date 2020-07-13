@@ -1,4 +1,4 @@
-import { IReturnType } from 'cal-to-json/models/return-type';
+import { IReturnType } from '../cal-to-json/models/return-type';
 import {
   IChange,
   ChangeType,

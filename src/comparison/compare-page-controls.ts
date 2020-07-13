@@ -6,7 +6,7 @@ import {
   ICollectionChange,
   MemberChange,
 } from './change.model';
-import IPageControl from 'cal-to-json/models/page-control';
+import IPageControl from '../cal-to-json/models/page-control';
 
 export class ComparePageControls {
   static compareCollection(

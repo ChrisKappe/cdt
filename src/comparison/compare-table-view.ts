@@ -5,7 +5,8 @@ import {
   MemberChange,
 } from './change.model';
 import { CompareFilterConditions } from './compare-filter-conditions';
-import ITableView from 'cal-to-json/models/table-view';
+import ITableView from '../cal-to-json/models/table-view';
+import StringHelper from '../cal-to-json/util/string-helper';
 
 export class CompareTableView {
   static compare(
@@ -31,8 +32,8 @@ export class CompareTableView {
           MemberChange.AddChange(
             changes,
             member,
-            baseObject.key?.join(','),
-            customObject.key?.join(',')
+            StringHelper.join(baseObject.key, ', '),
+            StringHelper.join(customObject.key, ', ')
           );
           break;
         case 'order':

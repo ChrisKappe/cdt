@@ -1,5 +1,5 @@
 import { ChangeType, IOrderByChange } from './change.model';
-import { IOrderBy } from 'cal-to-json/cal/order-by-reader';
+import { IOrderBy } from '../cal-to-json/cal/order-by-reader';
 
 export class CompareOrderBy {
   static compare(

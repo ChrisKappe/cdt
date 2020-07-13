@@ -1,4 +1,4 @@
-import ITableKey from 'cal-to-json/cal/table-key';
+import ITableKey from '../cal-to-json/cal/table-key';
 import {
   ChangeType,
   ITableKeyChange,

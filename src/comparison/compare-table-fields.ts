@@ -1,5 +1,5 @@
 import { CompareProperties } from './compare-properties';
-import ITableField from 'cal-to-json/models/table-field';
+import ITableField from '../cal-to-json/models/table-field';
 import {
   ChangeType,
   ITableFieldChange,
