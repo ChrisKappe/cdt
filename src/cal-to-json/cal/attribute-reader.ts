@@ -158,6 +158,7 @@ export default class AttributeReader {
           onMissingLicense,
           onMissingPermission
         );
+      case 'Normal':
       case 'TryFunction':
       case 'External':
       case 'Internal':

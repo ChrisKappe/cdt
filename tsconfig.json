@@ -8,6 +8,7 @@
             "dom"
         ],
         "declaration": true,
+        "sourceMap": false,
         "outDir": "lib",
         "rootDir": "src",
         "strict": true,

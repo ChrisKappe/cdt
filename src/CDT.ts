@@ -13,11 +13,11 @@ export default class CDT {
   static startCLI() {
     clear();
     console.log(
-      chalk.blue(figlet.textSync('CAL CDT', { horizontalLayout: 'full' }))
+      chalk.blue(figlet.textSync('CAL - CDT', { horizontalLayout: 'full' }))
     );
 
     program
-      .version('0.0.1')
+      .version('0.1.7')
       .description(
         chalk.green(
           'Customization Detection Tool by MSN Raju, All e Technologies Pvt. Ltd.\n'
@@ -106,7 +106,7 @@ export default class CDT {
     changes: Array<IAppObjectChange>,
     changesReportFileName: string
   ) {
-    console.log('Generating Report ...');
+    console.log('Generating Report...');
 
     ExcelReport.write(
       changes,
@@ -146,12 +146,10 @@ export default class CDT {
 
   static start() {
     let baseObjectFileName = path.resolve('D:/NAV/CDT/LF/Base-14.0.35570-W1-all.txt');
-    console.log('Reading Base Objects...');
-    const baseObjects = ObjectReader.readObjects(baseObjectFileName);
+    const baseObjects = CDT.readBaseObjects(baseObjectFileName);
 
     let customObjectFileName = path.resolve('D:/NAV/CDT/LF/LF8.00-14.0.35570-W1-release-all.txt');
-    console.log('Reading Custom Objects...');
-    const customObjects = ObjectReader.readObjects(customObjectFileName);
+    const customObjects = CDT.readCustomObjects(customObjectFileName);
 
     const changes = this.compareObjectChanges(baseObjects, customObjects);
 
@@ -165,5 +163,17 @@ export default class CDT {
       changesReportFileName
     );
     console.log('All Done!');
+  }
+
+  static readCustomObjects(customObjectFileName: string) {
+    console.log('Reading Custom Objects...');
+    const customObjects = ObjectReader.readObjects(customObjectFileName);
+    return customObjects;
+  }
+
+  static readBaseObjects(baseObjectFileName: string) {
+    console.log('Reading Base Objects...');
+    const baseObjects = ObjectReader.readObjects(baseObjectFileName);
+    return baseObjects;
   }
 }

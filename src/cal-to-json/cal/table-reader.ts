@@ -106,7 +106,7 @@ export default class TableReader {
   }
 
   private static getKey(input: string): ITableKey {
-    const KEY_EXPR = /{ (\w*)\s*?;(\[.*?\]|.*?)\s*?(;(.*\r?\n?)*?)? }/;
+    const KEY_EXPR = /{ (\w*)\s*?;(\[.*?\]|.*?)\s*?(;((.*\r?\n?)*?))? }/;
     if (!KEY_EXPR.test(input)) throw new Error(`Invalid key '${input}'`);
 
     const match = KEY_EXPR.exec(input);

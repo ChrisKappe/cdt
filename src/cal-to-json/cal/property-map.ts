@@ -216,6 +216,7 @@ export default class PropertyMap {
     { name: 'EntityName', type: PropertyType.Text },
     { name: 'ChangeTrackingAllowed', type: PropertyType.Boolean },
     { name: 'ActionList', type: PropertyType.ActionList },
+    { name: 'TimerUpdate', type: PropertyType.Integer },
 
     { name: 'OnInit', type: PropertyType.Trigger },
     { name: 'OnOpenPage', type: PropertyType.Trigger },
@@ -460,6 +461,8 @@ export default class PropertyMap {
     { name: 'DepartmentCategory', type: PropertyType.Text },
     { name: 'ApplicationArea', type: PropertyType.Text },
     { name: 'MemberOfMenu', type: PropertyType.Text },
+    { name: 'IsDepartmentPage', type: PropertyType.Boolean },    
+    { name: 'RunObjectType', type: PropertyType.Text },        
   ];
 
   static codeunitProperties: Array<IPropertyMap> = [

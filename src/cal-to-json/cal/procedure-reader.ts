@@ -89,7 +89,7 @@ export default class ProcedureReader {
     variablesText: string,
     bodyText: string
   ) {
-    const PROCEDURE_EXPR = /((EVENT )(\w*|".*")@(\d*)::)?((LOCAL )?PROCEDURE )?(\w*|".*")@(-?\d*)\((.*)\) ?(.*);/;
+    const PROCEDURE_EXPR = /((EVENT )(\w*|".*")@(\d*)::)?((LOCAL )?PROCEDURE )?(\w*|".*")@?(-?\d*)?\((.*)\) ?(.*);/;
     if (!PROCEDURE_EXPR.test(input))
       throw new Error(`Invalid Procedure: ${input}`);
 

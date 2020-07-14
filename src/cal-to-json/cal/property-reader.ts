@@ -52,7 +52,7 @@ export default class PropertyReader {
     value: string,
     maps: Array<IPropertyMap>
   ): IProperty {
-    const propType = maps.find(p => p.name === name);
+    const propType = maps.find((p) => p.name === name);
     if (!propType) {
       throw new TypeError(`Property map not found for '${name}'`);
     }
