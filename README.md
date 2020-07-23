@@ -2,7 +2,7 @@
 
 ![GitHub](https://img.shields.io/github/license/msnraju/cdt)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/msnraju/cdt)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/msnraju/cdt/BuildApplication)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/msnraju/cdt/Build%20CDT)
 ![npm](https://img.shields.io/npm/dt/@msnraju/cdt)
 
 Dynamics NAV customization detection tool.
