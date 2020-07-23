@@ -1,0 +1,11 @@
+name: BuildApplication
+on: [push]
+
+jobs:
+  build:
+    # Job name is Build
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        npm run build

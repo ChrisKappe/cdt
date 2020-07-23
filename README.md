@@ -1,4 +1,10 @@
 # CDT
+
+![GitHub](https://img.shields.io/github/license/msnraju/cdt)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/msnraju/cdt)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/msnraju/cdt/BuildApplication)
+![npm](https://img.shields.io/npm/dt/@msnraju/cdt)
+
 Dynamics NAV customization detection tool.
 
 This tool will take NAV object files exported as text from Base / Standard database, Custom / Customer databases and generate an Excel Report with the following details.
