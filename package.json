@@ -2,13 +2,13 @@
   "name": "@msnraju/cdt",
   "author": "MSN Raju",
   "description": "Microsoft Dynamics NAV - Customization Detection Tool",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "main": "./lib/index.js",
   "repository": {
     "url": "https://github.com/msnraju/cdt"
   },
-  "homepage": "https://msnraju.github.io/cdt/",    
+  "homepage": "https://msnraju.github.io/cdt/",
   "bin": {
     "cdt": "./lib/index.js",
     "@msnraju/cdt": "./lib/index.js"
@@ -52,8 +52,21 @@
   "keywords": [
     "Business Central",
     "Dynamics NAV",
+    "Navision",
+    "D365",
     "NAV",
     "CAL",
-    "AL"
+    "AL",
+    "Developer",
+    "Database",
+    "Developer",
+    "Tools",
+    "Toolkit",
+    "Migrate",
+    "Upgrade",
+    "Compare",
+    "Objects",
+    "Files",
+    "Report"
   ]
 }
