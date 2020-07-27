@@ -7,7 +7,7 @@
 
 This tool helps you to identify customizations done in the Microsoft Dynamics NAV database.
 
-This will provides the following details in an excel report:
+This will provide the following details in an excel report:
 
 * List of All Modified Objects
 * List of All Modified Functions
